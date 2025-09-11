@@ -64,6 +64,21 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
-        return List.of();
+        //Array to store possible moves
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        //Possible directions bishop can move
+        int[][] directions = {
+                {1, 1},
+                {1, -1},
+                {-1, 1},
+                {-1, -1}
+        };
+
+        return moves;
+    }
+    //Checks for valid position
+    private boolean isValidPosition(int row, int col) {
+        return row >= 1 && row <= 8 && col >= 1 && col <= 8;
     }
 }
