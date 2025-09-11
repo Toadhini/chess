@@ -57,7 +57,7 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
         if (piece.getPieceType() == PieceType.BISHOP){
-            return List.of(new ChessMove(new ChessPosition(5, 4), new ChessPosition(1, 8), null));
+            return bishopMoves(board, myPosition);
         }
         return List.of();
 
@@ -68,12 +68,43 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
 
         //Possible directions bishop can move
-        int[][] directions = {
+        int[][] bishopDirections = {
                 {1, 1},
                 {1, -1},
                 {-1, 1},
                 {-1, -1}
         };
+
+        for (int[] direction : bishopDirections) {
+            int rowDirection = direction[0];
+            int colDirection = direction[1];
+
+            // Keep moving in this direction until we hit something or go off the board
+            int currentRow = myPosition.getRow() + rowDirection;
+            int currentCol = myPosition.getColumn() + colDirection;
+
+            while (isValidPosition(currentRow, currentCol)) {
+                ChessPosition targetPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+
+                if (targetPiece == null) {
+                    // Empty square - we can move here and continue in this direction
+                    moves.add(new ChessMove(myPosition, targetPosition, null));
+                } else {
+                    // There's a piece here
+                    if (targetPiece.getTeamColor() != this.getTeamColor()) {
+                        // Enemy piece - we can capture it but can't move further
+                        moves.add(new ChessMove(myPosition, targetPosition, null));
+                    }
+                    // Whether enemy or friendly, we can't move past this piece
+                    break;
+                }
+
+                // Move to the next position in this direction
+                currentRow += rowDirection;
+                currentCol += colDirection;
+            }
+        }
 
         return moves;
     }
