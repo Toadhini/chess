@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 /**
  * Represents a single chess piece
@@ -59,5 +61,9 @@ public class ChessPiece {
         }
         return List.of();
 
+    }
+
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
+        return List.of();
     }
 }
