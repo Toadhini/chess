@@ -59,6 +59,9 @@ public class ChessPiece {
         if (piece.getPieceType() == PieceType.BISHOP){
             return bishopMoves(board, myPosition);
         }
+        else if (piece.getPieceType() == PieceType.ROOK){
+            return rookMoves(board, myPosition);
+        }
         return List.of();
 
     }
@@ -108,20 +111,18 @@ public class ChessPiece {
 
         return moves;
     }
-    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>();
 
         //Possible directions knight can move
-        int[][] knightDirections = {
+        int[][] rookDirections = {
                 {1, 0},
                 {0, 1},
                 {-1, 0},
                 {0, -1}
         };
 
-
-
-        for (int[] direction : knightDirections){
+        for (int[] direction : rookDirections){
             int rowDirection = direction[0];
             int colDirection = direction[1];
 
@@ -140,9 +141,11 @@ public class ChessPiece {
                     }
                     break;
                 }
+                //Move to the next position in this direction
+                currentRow += rowDirection;
+                currentCol += colDirection;
             }
         }
-
         return moves;
     }
     //Checks for valid position
