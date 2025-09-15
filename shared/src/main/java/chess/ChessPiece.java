@@ -108,6 +108,43 @@ public class ChessPiece {
 
         return moves;
     }
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        //Possible directions knight can move
+        int[][] knightDirections = {
+                {1, 0},
+                {0, 1},
+                {-1, 0},
+                {0, -1}
+        };
+
+
+
+        for (int[] direction : knightDirections){
+            int rowDirection = direction[0];
+            int colDirection = direction[1];
+
+            int currentRow = myPosition.getRow() + rowDirection;
+            int currentCol = myPosition.getColumn() + colDirection;
+
+            while (isValidPosition(currentRow, currentCol)){
+                ChessPosition targetPosition = new ChessPosition(currentRow, currentCol);
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+
+                if (targetPiece == null){
+                    moves.add(new ChessMove(myPosition, targetPosition, null));
+                } else {
+                    if (targetPiece.getTeamColor() != this.getTeamColor()){
+                        moves.add(new ChessMove(myPosition, targetPosition, null));
+                    }
+                    break;
+                }
+            }
+        }
+
+        return moves;
+    }
     //Checks for valid position
     private boolean isValidPosition(int row, int col) {
         return row >= 1 && row <= 8 && col >= 1 && col <= 8;
