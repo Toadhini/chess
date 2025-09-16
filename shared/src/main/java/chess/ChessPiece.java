@@ -65,7 +65,7 @@ public class ChessPiece {
         else if(piece.getPieceType() == PieceType.KNIGHT){
             return knightMoves(board, myPosition);
         }
-        else if(piece.getPieceType() == Piecetype.King){
+        else if(piece.getPieceType() == PieceType.KING){
             return kingMoves(board, myPosition);
         }
         return List.of();
