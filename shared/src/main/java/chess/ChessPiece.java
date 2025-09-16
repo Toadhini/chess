@@ -62,6 +62,9 @@ public class ChessPiece {
         else if (piece.getPieceType() == PieceType.ROOK){
             return rookMoves(board, myPosition);
         }
+        else if(piece.getPieceType() == PieceType.KNIGHT){
+            return knightMoves(board, myPosition);
+        }
         return List.of();
 
     }
@@ -82,7 +85,7 @@ public class ChessPiece {
             int rowDirection = direction[0];
             int colDirection = direction[1];
 
-            // Keep moving in this direction until we hit something or go off the board
+            //Keep moving in this direction until we hit something or go off the board
             int currentRow = myPosition.getRow() + rowDirection;
             int currentCol = myPosition.getColumn() + colDirection;
 
@@ -91,19 +94,19 @@ public class ChessPiece {
                 ChessPiece targetPiece = board.getPiece(targetPosition);
 
                 if (targetPiece == null) {
-                    // Empty square - we can move here and continue in this direction
+                    //Empty square
                     moves.add(new ChessMove(myPosition, targetPosition, null));
                 } else {
-                    // There's a piece here
+                    //There's a piece here
                     if (targetPiece.getTeamColor() != this.getTeamColor()) {
-                        // Enemy piece - we can capture it but can't move further
+                        //Enemy piece
                         moves.add(new ChessMove(myPosition, targetPosition, null));
                     }
-                    // Whether enemy or friendly, we can't move past this piece
+                    //Finished moving
                     break;
                 }
 
-                // Move to the next position in this direction
+                //Move to the next position in this direction
                 currentRow += rowDirection;
                 currentCol += colDirection;
             }
@@ -144,6 +147,43 @@ public class ChessPiece {
                 //Move to the next position in this direction
                 currentRow += rowDirection;
                 currentCol += colDirection;
+            }
+        }
+        return moves;
+    }
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        int[][] knightDirections = {
+                {2, 1},
+                {1, 2},
+                {-1, 2},
+                {-2, 1},
+                {1, -2},
+                {2, -1},
+                {-1, -2},
+                {-2, -1}
+        };
+
+        for (int[] direction : knightDirections){
+            int rowDirection = direction[0];
+            int colDirection = direction[1];
+
+            int targetRow = myPosition.getRow() + rowDirection;
+            int targetCol = myPosition.getColumn() + colDirection;
+
+            //Not sliding piece so just a jump
+            if (isValidPosition(targetRow, targetCol)){
+                ChessPosition targetPosition = new ChessPosition(targetRow, targetCol);
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+
+                if (targetPiece == null){
+                    //Empty square
+                    moves.add(new ChessMove(myPosition, targetPosition, null));
+                }
+                else if (targetPiece.getTeamColor() != this.getTeamColor()){
+                    //Enemy piece
+                    moves.add(new ChessMove(myPosition, targetPosition, null));
+                }
             }
         }
         return moves;
