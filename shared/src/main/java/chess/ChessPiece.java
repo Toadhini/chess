@@ -65,6 +65,9 @@ public class ChessPiece {
         else if(piece.getPieceType() == PieceType.KNIGHT){
             return knightMoves(board, myPosition);
         }
+        else if(piece.getPieceType() == Piecetype.King){
+            return kingMoves(board, myPosition);
+        }
         return List.of();
 
     }
@@ -186,6 +189,12 @@ public class ChessPiece {
                 }
             }
         }
+        return moves;
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+
         return moves;
     }
     //Checks for valid position
