@@ -195,6 +195,36 @@ public class ChessPiece {
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>();
 
+        int[][] kingDirections = {
+                {1, 1},
+                {-1, -1},
+                {1, -1},
+                {-1, 1},
+                {1, 0},
+                {-1, 0},
+                {0, 1},
+                {0, -1}
+        };
+
+        for(int[] direction : kingDirections){
+            int rowDirection = direction[0];
+            int colDirection = direction[1];
+
+            int targetRow = myPosition.getRow() + rowDirection;
+            int targetCol = myPosition.getColumn() + colDirection;
+
+            if (isValidPosition(targetRow, targetCol)){
+                ChessPosition targetPosition = new ChessPosition(targetRow, targetCol);
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+
+                if (targetPiece == null){
+                    moves.add(new ChessMove(myPosition, targetPosition, null));
+                }
+                else if (targetPiece.getTeamColor() != this.getTeamColor()){
+                    moves.add(new ChessMove(myPosition, targetPosition, null));
+                }
+            }
+        }
         return moves;
     }
     //Checks for valid position
