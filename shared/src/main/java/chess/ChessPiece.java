@@ -68,6 +68,9 @@ public class ChessPiece {
         else if(piece.getPieceType() == PieceType.KING){
             return kingMoves(board, myPosition);
         }
+        else if(piece.getPieceType() == PieceType.QUEEN){
+            return queenMoves(board, myPosition);
+        }
         return List.of();
 
     }
@@ -225,6 +228,31 @@ public class ChessPiece {
                 }
             }
         }
+        return moves;
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+
+        int[][] queenDirections = {
+                {1, 1},
+                {-1, -1},
+                {1, -1},
+                {-1, 1},
+                {1, 0},
+                {-1, 0},
+                {0, 1},
+                {0, -1}
+        };
+
+        for(int[] direction : queenDirections){
+            int rowDirection = direction[0];
+            int colDirection = direction[1];
+
+            int targetRow = myPosition.getRow() + rowDirection;
+            int targetCol = myPosition.getColumn() + colDirection;
+        }
+
         return moves;
     }
     //Checks for valid position
