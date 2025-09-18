@@ -248,23 +248,22 @@ public class ChessPiece {
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>();
 
-        // Queen moves like both rook and bishop combined
+        //Queen moves like rook and bishop
         int[][] queenDirections = {
-                {1, 1},   // diagonal
-                {-1, -1}, // diagonal
-                {1, -1},  // diagonal
-                {-1, 1},  // diagonal
-                {1, 0},   // vertical
-                {-1, 0},  // vertical
-                {0, 1},   // horizontal
-                {0, -1}   // horizontal
+                {1, 1},
+                {-1, -1},
+                {1, -1},
+                {-1, 1},
+                {1, 0},
+                {-1, 0},
+                {0, 1},
+                {0, -1}
         };
 
         for(int[] direction : queenDirections){
             int rowDirection = direction[0];
             int colDirection = direction[1];
 
-            // Keep moving in this direction until we hit something or go off the board
             int currentRow = myPosition.getRow() + rowDirection;
             int currentCol = myPosition.getColumn() + colDirection;
 
@@ -273,19 +272,14 @@ public class ChessPiece {
                 ChessPiece targetPiece = board.getPiece(targetPosition);
 
                 if (targetPiece == null){
-                    // Empty square
                     moves.add(new ChessMove(myPosition, targetPosition, null));
                 } else {
-                    // There's a piece here
                     if(targetPiece.getTeamColor() != this.getTeamColor()){
-                        // Enemy piece - can capture
                         moves.add(new ChessMove(myPosition, targetPosition, null));
                     }
-                    // Stop sliding in this direction
                     break;
                 }
 
-                // Move to the next position in this direction
                 currentRow += rowDirection;
                 currentCol += colDirection;
             }
@@ -295,10 +289,10 @@ public class ChessPiece {
     private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>();
         
-        // White pawns move up (+1), black pawns move down (-1)
+        //Different direction for white and black pawns
         int direction = (this.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
         
-        // Check forward move (one square)
+        //Forward move
         int forwardRow = myPosition.getRow() + direction;
         int forwardCol = myPosition.getColumn();
         
@@ -307,19 +301,17 @@ public class ChessPiece {
             ChessPiece forwardPiece = board.getPiece(forwardPosition);
             
             if (forwardPiece == null) {
-                // Empty square - can move forward
                 if (forwardRow == 8 || forwardRow == 1) {
-                    // Promotion - pawn can become any of the four pieces
+                    //Promotion
                     moves.add(new ChessMove(myPosition, forwardPosition, PieceType.QUEEN));
                     moves.add(new ChessMove(myPosition, forwardPosition, PieceType.BISHOP));
                     moves.add(new ChessMove(myPosition, forwardPosition, PieceType.ROOK));
                     moves.add(new ChessMove(myPosition, forwardPosition, PieceType.KNIGHT));
                 } else {
-                    // Normal forward move
                     moves.add(new ChessMove(myPosition, forwardPosition, null));
                 }
                 
-                // Check double move from starting position
+                //Double move check
                 if ((this.getTeamColor() == ChessGame.TeamColor.WHITE && myPosition.getRow() == 2) ||
                     (this.getTeamColor() == ChessGame.TeamColor.BLACK && myPosition.getRow() == 7)) {
                     
@@ -334,8 +326,8 @@ public class ChessPiece {
             }
         }
         
-        // Check diagonal captures (left and right)
-        int[] captureDirections = {-1, 1}; // left and right
+        //Capture move
+        int[] captureDirections = {-1, 1};
         for (int colDirection : captureDirections) {
             int captureRow = myPosition.getRow() + direction;
             int captureCol = myPosition.getColumn() + colDirection;
@@ -345,12 +337,12 @@ public class ChessPiece {
                 ChessPiece capturePiece = board.getPiece(capturePosition);
                 
                 if (capturePiece != null && capturePiece.getTeamColor() != this.getTeamColor()) {
-                    // Enemy piece - can capture
+                    //Enemy
                     if (captureRow == 8 || captureRow == 1) {
-                        // Promotion on capture - pawn becomes a queen
+                        //Become Queen
                         moves.add(new ChessMove(myPosition, capturePosition, PieceType.QUEEN));
                     } else {
-                        // Normal capture
+                        //Normal
                         moves.add(new ChessMove(myPosition, capturePosition, null));
                     }
                 }
