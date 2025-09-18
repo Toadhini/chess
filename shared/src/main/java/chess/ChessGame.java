@@ -14,6 +14,11 @@ public class ChessGame {
 
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * @return Which team's turn it is
      */
