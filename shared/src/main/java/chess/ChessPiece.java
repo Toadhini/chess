@@ -298,8 +298,11 @@ public class ChessPiece {
             if (forwardPiece == null) {
                 // Empty square - can move forward
                 if (forwardRow == 8 || forwardRow == 1) {
-                    // Promotion - pawn becomes a queen
+                    // Promotion - pawn can become any of the four pieces
                     moves.add(new ChessMove(myPosition, forwardPosition, PieceType.QUEEN));
+                    moves.add(new ChessMove(myPosition, forwardPosition, PieceType.BISHOP));
+                    moves.add(new ChessMove(myPosition, forwardPosition, PieceType.ROOK));
+                    moves.add(new ChessMove(myPosition, forwardPosition, PieceType.KNIGHT));
                 } else {
                     // Normal forward move
                     moves.add(new ChessMove(myPosition, forwardPosition, null));
