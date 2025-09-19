@@ -339,10 +339,12 @@ public class ChessPiece {
                 if (capturePiece != null && capturePiece.getTeamColor() != this.getTeamColor()) {
                     //Enemy
                     if (captureRow == 8 || captureRow == 1) {
-                        //Become Queen
                         moves.add(new ChessMove(myPosition, capturePosition, PieceType.QUEEN));
+                        moves.add(new ChessMove(myPosition, capturePosition, PieceType.ROOK));
+                        moves.add(new ChessMove(myPosition, capturePosition, PieceType.BISHOP));
+                        moves.add(new ChessMove(myPosition, capturePosition, PieceType.KNIGHT));
                     } else {
-                        //Normal
+                        //Normal capture
                         moves.add(new ChessMove(myPosition, capturePosition, null));
                     }
                 }
