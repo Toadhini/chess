@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -9,21 +10,33 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private ChessBoard board;
+    private TeamColor currentTeam;
 
     public ChessGame() {
-
+        this.board = new ChessBoard();
+        this.board.resetBoard();
+        this.currentTeam = TeamColor.WHITE;
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        return java.util.Objects.hash(board, currentTeam);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        ChessGame chessGame = (ChessGame) obj;
+        return java.util.Objects.equals(board, chessGame.board) && currentTeam == chessGame.currentTeam;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return currentTeam;
     }
 
     /**
@@ -32,7 +45,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.currentTeam = team;
     }
 
     /**
@@ -51,7 +64,23 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(startPosition);
+        if (piece == null) {
+            return null;
+        }
+
+        // Get all possible moves for this piece
+        Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> validMoves = new ArrayList<>();
+
+        // Filter out moves that would leave the king in check
+        for (ChessMove move : possibleMoves) {
+            if (!wouldLeaveKingInCheck(move, piece.getTeamColor())) {
+                validMoves.add(move);
+            }
+        }
+
+        return validMoves;
     }
 
     /**
