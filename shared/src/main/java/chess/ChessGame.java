@@ -65,7 +65,7 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         //Return array of valid moves for chosen piece
-        ChessPiece playerPiece= board.getPiece(startPosition);
+        ChessPiece playerPiece = board.getPiece(startPosition);
         if (playerPiece == null) {
             return null;
         }
@@ -73,7 +73,11 @@ public class ChessGame {
         //List of moves, (including that would put king in check)
         validMoves = playerPiece.pieceMoves(board, startPosition);
 
-        
+        if(playerPiece.getPieceType() == ChessPiece.PieceType.KING){
+            Collection<ChessMove> filteredMoves = new ArrayList<>();
+            //Add moves that are valid but during check if move would put king in check do not add
+
+        }
 
         return validMoves;
     }
@@ -195,6 +199,10 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         //Return current board set up
+        throw new RuntimeException("Not implemented");
+    }
+
+    public booolean wouldLeaveInCheck(){
         throw new RuntimeException("Not implemented");
     }
 }
