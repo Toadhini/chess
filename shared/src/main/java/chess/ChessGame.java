@@ -73,7 +73,7 @@ public class ChessGame {
         //List of moves, (including that would put king in check)
         validMoves = playerPiece.pieceMoves(board, startPosition);
 
-        if(playerPiece.getPieceType() == ChessPiece.PieceType.KING){
+        if (playerPiece.getPieceType() == ChessPiece.PieceType.KING) {
             Collection<ChessMove> filteredMoves = new ArrayList<>();
             //Add moves that are valid but during check if move would put king in check do not add
 
@@ -91,12 +91,12 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
         ChessPiece piece = board.getPiece(startPosition);
-        
+
         //Check for piece in position
         if (piece == null) {
             throw new InvalidMoveException("No piece at start position");
         }
-        
+
         //Check for turn
         if (piece.getTeamColor() != currentTeam) {
             throw new InvalidMoveException("Not your turn");
@@ -104,7 +104,7 @@ public class ChessGame {
         //Check if move is valid
         //Execute Move
         //Change turn
-        
+
         throw new RuntimeException("Not fully implemented yet");
     }
 
@@ -199,10 +199,24 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         //Return current board set up
-        throw new RuntimeException("Not implemented");
+        return board;
     }
 
-    public booolean wouldLeaveInCheck(){
-        throw new RuntimeException("Not implemented");
+    public boolean wouldLeaveInCheck(ChessMove move, TeamColor teamColor) {
+        //get current board
+        ChessPosition startPos = move.getStartPosition();
+        ChessPosition endPos = move.getEndPosition();
+        ChessPiece movingPiece = board.getPiece(startPos);
+        ChessPiece capturePiece = board.getPiece(endPos);
+
+        board.addPiece(endPos, movingPiece);
+        board.addPiece(startPos, null);
+
+        boolean checked = isInCheck(teamColor);
+
+        board.addPiece(startPos, movingPiece);
+        board.addPiece(endPos, capturePiece);
+
+        return checked;
     }
 }
