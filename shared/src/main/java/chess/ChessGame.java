@@ -95,6 +95,7 @@ public class ChessGame {
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
         ChessPosition startPosition = move.getStartPosition();
+        ChessPosition endPosition = move.getEndPosition();
         ChessPiece piece = board.getPiece(startPosition);
 
         //Check for piece in position
@@ -106,10 +107,28 @@ public class ChessGame {
         if (piece.getTeamColor() != currentTeam) {
             throw new InvalidMoveException("Not your turn");
         }
-        //Check if move is valid
-        //Execute Move
+        Collection<ChessMove> valid = validMoves(startPosition);
+        if (!valid.contains(move)) {
+            throw new InvalidMoveException("Invalid move");
+        }
+
+        //Execute the move
+        ChessPiece pieceToPlace = piece;
+
+        //Pawn promotion
+        if (move.getPromotionPiece() != null) {
+            pieceToPlace = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+        }
+
+        board.addPiece(endPosition, pieceToPlace);
+        board.addPiece(startPosition, null);
+
         //Change turn
-        Collection<ChessMove> validMoves = new ArrayList<>();
+        if (currentTeam == TeamColor.WHITE) {
+            currentTeam = TeamColor.BLACK;
+        } else {
+            currentTeam = TeamColor.WHITE;
+        }
 
 
     }
@@ -172,8 +191,31 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //Check if king can not escape enemy pieces
-        throw new RuntimeException("Not implemented");
+        //Stalemate so cant be checkmate
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+
+        //Check if the team has any valid moves to escape check
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+
+                //If there's a piece and it belongs to the team
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = validMoves(position);
+
+                    //Able to escape checkmate
+                    if (!moves.isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // In check AND no valid moves = checkmate
+        return true;
     }
 
     /**
