@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -13,23 +14,24 @@ public class ChessGame {
     private ChessBoard board;
     private TeamColor currentTeam;
 
-    public ChessGame() {
-        this.board = new ChessBoard();
-        this.board.resetBoard();
-        this.currentTeam = TeamColor.WHITE;
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ChessGame chessGame = (ChessGame) o;
+        return Objects.equals(board, chessGame.board) && currentTeam == chessGame.currentTeam;
     }
 
     @Override
     public int hashCode() {
-        return java.util.Objects.hash(board, currentTeam);
+        return Objects.hash(board, currentTeam);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
-        ChessGame chessGame = (ChessGame) obj;
-        return java.util.Objects.equals(board, chessGame.board) && currentTeam == chessGame.currentTeam;
+    public ChessGame() {
+        this.board = new ChessBoard();
+        this.board.resetBoard();
+        this.currentTeam = TeamColor.WHITE;
     }
 
     /**
@@ -69,14 +71,17 @@ public class ChessGame {
         if (playerPiece == null) {
             return null;
         }
+        
+        //Get all possible moves for the piece (including moves that might leave king in check)
+        Collection<ChessMove> possibleMoves = playerPiece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new ArrayList<>();
-        //List of moves, (including that would put king in check)
-        validMoves = playerPiece.pieceMoves(board, startPosition);
-
-        if (playerPiece.getPieceType() == ChessPiece.PieceType.KING) {
-            Collection<ChessMove> filteredMoves = new ArrayList<>();
-            //Add moves that are valid but during check if move would put king in check do not add
-
+        
+        //Filter out moves that would leave the king in check
+        TeamColor pieceColor = playerPiece.getTeamColor();
+        for (ChessMove move : possibleMoves) {
+            if (!wouldLeaveInCheck(move, pieceColor)) {
+                validMoves.add(move);
+            }
         }
 
         return validMoves;
@@ -116,7 +121,6 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         //Check if king is in danger from enemy pieces
-        //Check King position
         ChessPosition kingPosition = null;
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
@@ -134,7 +138,7 @@ public class ChessGame {
             if (kingPosition != null) break;
         }
 
-        //Check for oppponent moves against king pos
+        //Check for opponent moves against king pos
         TeamColor opponentColor;
         if (teamColor == TeamColor.BLACK) {
             opponentColor = TeamColor.WHITE;
@@ -188,8 +192,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        //Reset Board
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -203,17 +206,26 @@ public class ChessGame {
     }
 
     public boolean wouldLeaveInCheck(ChessMove move, TeamColor teamColor) {
-        //get current board
+        //Simulate the move and check if it leaves the king in check
         ChessPosition startPos = move.getStartPosition();
         ChessPosition endPos = move.getEndPosition();
         ChessPiece movingPiece = board.getPiece(startPos);
         ChessPiece capturePiece = board.getPiece(endPos);
 
-        board.addPiece(endPos, movingPiece);
+        //Pawn promotion
+        ChessPiece pieceToPlace = movingPiece;
+        if (move.getPromotionPiece() != null) {
+            pieceToPlace = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
+        }
+
+        //Check the move
+        board.addPiece(endPos, pieceToPlace);
         board.addPiece(startPos, null);
 
+        //Check if this leaves the king in check
         boolean checked = isInCheck(teamColor);
 
+        //Undo the move
         board.addPiece(startPos, movingPiece);
         board.addPiece(endPos, capturePiece);
 
