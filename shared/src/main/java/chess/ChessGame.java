@@ -109,8 +109,9 @@ public class ChessGame {
         //Check if move is valid
         //Execute Move
         //Change turn
+        Collection<ChessMove> validMoves = new ArrayList<>();
 
-        throw new RuntimeException("Not fully implemented yet");
+
     }
 
     /**
@@ -183,7 +184,27 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (isInCheck(teamColor)){
+            return false;
+        }
+
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+
+                // If there's a piece and it belongs to the team
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = validMoves(position);
+
+                    // If this piece has any valid moves, not stalemate
+                    if (!moves.isEmpty()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
