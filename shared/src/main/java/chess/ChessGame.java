@@ -202,7 +202,7 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
-    public booolean wouldLeaveInCheck(){
+    public boolean wouldLeaveInCheck(){
         throw new RuntimeException("Not implemented");
     }
 }
