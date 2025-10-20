@@ -13,6 +13,7 @@ public class ClearHandler {
 
     public void handle(Context ctx){
         try{
+            System.out.println("Clear endpoint called!");//DEBUG line, should print if works correctly
             clearService.clear();
             ctx.status(200);
             ctx.json(new ResponseMessage(""));

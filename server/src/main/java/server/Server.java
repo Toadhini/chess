@@ -2,6 +2,7 @@ package server;
 
 import io.javalin.*;
 import dataaccess.*;
+import model.ResponseMessage;
 import service.*;
 import server.handlers.*;
 
@@ -32,7 +33,8 @@ public class Server {
         //Handler initialization
         clearHandler = new ClearHandler(clearService);
         // Register your endpoints and exception handlers here.
-        javalin.delete("/db/clear", clearHandler::handle);
+        // Register your endpoints and exception handlers here.
+        javalin.delete("/db", clearHandler::handle);
     }
 
     public int run(int desiredPort) {
