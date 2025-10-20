@@ -184,7 +184,7 @@ public class ChessPiece {
                 {-2, -1}
         };
 
-        for (int[] direction : knightDirections){
+        for(int[] direction : knightDirections){
             int rowDirection = direction[0];
             int colDirection = direction[1];
 
