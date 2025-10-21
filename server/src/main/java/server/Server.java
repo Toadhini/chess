@@ -6,14 +6,6 @@ import service.*;
 import server.handlers.*;
 
 public class Server {
-    static {
-        // Force Jackson to be loaded before Javalin initializes
-        try {
-            Class.forName("com.fasterxml.jackson.databind.ObjectMapper");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Jackson not found", e);
-        }
-    }
 
     private final Javalin javalin;
 

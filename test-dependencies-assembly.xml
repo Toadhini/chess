@@ -18,6 +18,13 @@
             <outputDirectory>/</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <unpack>true</unpack>
+            <scope>compile</scope>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <unpack>true</unpack>
+            <scope>runtime</scope>
         </dependencySet>
     </dependencySets>
 </assembly>
