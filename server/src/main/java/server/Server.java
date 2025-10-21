@@ -4,6 +4,8 @@ import io.javalin.*;
 import dataaccess.*;
 import service.*;
 import server.handlers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.javalin.json.JavalinJackson;
 
 public class Server {
 
@@ -27,7 +29,10 @@ public class Server {
     private final SessionHandler sessionHandler;
 
     public Server() {
-        javalin = Javalin.create(config -> config.staticFiles.add("web"));
+        javalin = Javalin.create(config -> {
+            config.staticFiles.add("web");
+            config.jsonMapper(new JavalinJackson());
+        });
 
         //DAO initialization
         userDAO = new MemoryUserDAO();
