@@ -31,7 +31,7 @@ public class Server {
     public Server() {
         javalin = Javalin.create(config -> {
             config.staticFiles.add("web");
-            config.jsonMapper(new JavalinJackson());
+            config.jsonMapper(new JavalinJackson(new ObjectMapper()));
         });
 
         //DAO initialization
