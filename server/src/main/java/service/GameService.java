@@ -30,7 +30,7 @@ public class GameService {
     public void joinGame(Integer gameID, String playerColor, String authToken)throws DataAccessException{
         AuthData authData = authDAO.getAuth(authToken);
 
-        if(authToken == null){
+        if(authData == null){
             throw new DataAccessException("Error: unauthorized");
         }
         if(gameID == null || playerColor == null){
@@ -57,7 +57,7 @@ public class GameService {
             if(game.blackUsername() != null){
                 throw new DataAccessException("Error: already taken");
             }
-            GameData updatedGame = new GameData(game.gameID(), username, game.whiteUsername(), game.gameName(), game.game());
+            GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
             gameDAO.updateGame(updatedGame);
         }
     }

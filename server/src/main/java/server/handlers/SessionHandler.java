@@ -4,6 +4,7 @@ import service.SessionService;
 import model.*;
 import dataaccess.DataAccessException;
 import io.javalin.http.Context;
+import java.util.Map;
 
 public class SessionHandler {
     private final SessionService sessionService;
@@ -46,7 +47,7 @@ public class SessionHandler {
 
             // Send success response (empty JSON object)
             ctx.status(200);
-            ctx.json(new Object());
+            ctx.json(Map.of());
 
         } catch (DataAccessException e) {
             // Handle errors with appropriate status codes

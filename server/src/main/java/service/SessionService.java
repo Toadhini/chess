@@ -3,10 +3,10 @@ package service;
 import model.*;
 import dataaccess.*;
 import org.eclipse.jetty.server.Authentication;
-
+import java.util.Map;
 import java.util.Collection;
 import java.util.UUID;
-
+import io.javalin.http.Context;
 
 public class SessionService {
     private final AuthDAO authDAO;
@@ -41,6 +41,7 @@ public class SessionService {
     }
 
     public void logout(String authToken) throws DataAccessException {
+
         if(authToken == null){
             throw new DataAccessException("Error: bad request");
         }

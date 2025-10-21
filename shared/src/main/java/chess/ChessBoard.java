@@ -13,6 +13,9 @@ public class ChessBoard {
     ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
     }
+    public ChessPiece[][] getSquares(){
+        return squares;
+    }
 
     /**
      * Adds a chess piece to the chessboard
