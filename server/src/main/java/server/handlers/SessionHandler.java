@@ -18,7 +18,7 @@ public class SessionHandler {
     public void login(Context ctx){
         try {
             // Extract request body
-            LoginSessionRequest request = ctx.bodyAsClass(LoginSessionRequest.class);
+            LoginSessionRequest request = gson.fromJson(ctx.body(), LoginSessionRequest.class);
 
             // Call service
             LoginSessionResult result = sessionService.login(request.username(), request.password());

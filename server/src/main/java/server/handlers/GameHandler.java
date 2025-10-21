@@ -19,7 +19,7 @@ public class GameHandler {
             String authToken = ctx.header("authorization");
 
 
-            CreateGameRequest request = ctx.bodyAsClass(CreateGameRequest.class);
+            CreateGameRequest request = gson.fromJson(ctx.body(), CreateGameRequest.class);
 
             CreateGameResult result = gameService.createGame(request.gameName(), authToken);
 
@@ -46,7 +46,7 @@ public class GameHandler {
             String authToken = ctx.header("authorization");
 
             // Extract request body
-            JoinGameRequest request = ctx.bodyAsClass(JoinGameRequest.class);
+            JoinGameRequest request = gson.fromJson(ctx.body(), JoinGameRequest.class);
 
             // Call service
             gameService.joinGame(request.gameID(), request.playerColor(), authToken);

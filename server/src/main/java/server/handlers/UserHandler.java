@@ -17,7 +17,7 @@ public class UserHandler {
     public void register(Context ctx) {
         try {
             // Extract request body
-            UserData userData = ctx.bodyAsClass(UserData.class);
+            UserData userData = gson.fromJson(ctx.body(), UserData.class);
 
             // Call service
             RegisterResult result = userService.register(userData);
