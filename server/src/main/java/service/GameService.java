@@ -46,7 +46,7 @@ public class GameService {
         }
 
         String username = authData.username();
-        if(playerColor.equals("White")){
+        if(playerColor.equals("WHITE")){
             if(game.whiteUsername() != null){
                 throw new DataAccessException("Error: already taken");
             }

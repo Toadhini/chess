@@ -5,6 +5,7 @@ import dataaccess.*;
 import org.eclipse.jetty.server.Authentication;
 
 import java.util.Collection;
+import java.util.UUID;
 
 
 public class SessionService {
@@ -18,10 +19,27 @@ public class SessionService {
         this.gameDAO = gameDAO;
     }
 
-    public void login(String userName, String authToken) throws DataAccessException {
-        AuthData authData = authDAO.getAuth(authToken);
+    public LoginSessionResult login(String username, String password) throws DataAccessException {
+        if(username == null || password == null){
+            throw new DataAccessException("Error: bad request");
+        }
+        //Get user information
+        UserData user = userDAO.getUser(username);
 
+        if(user == null){
+            throw new DataAccessException("Error: unauthorized");
+        }
+        if(!user.password().equals(password)){
+            throw new DataAccessException("Error: unauthorized");
+        }
+        String authToken = UUID.randomUUID().toString();
+        AuthData authData = new AuthData(authToken, username);
+        authDAO.createAuth(authData);
+
+
+        return new LoginSessionResult(username, authToken);
     }
 
+    public void
 
 }
