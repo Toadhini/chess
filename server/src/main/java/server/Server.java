@@ -2,7 +2,8 @@ package server;
 
 import io.javalin.*;
 import dataaccess.*;
-import model.ResponseMessage;
+import model.*;
+import org.eclipse.jetty.server.Authentication;
 import service.*;
 import server.handlers.*;
 
@@ -17,9 +18,13 @@ public class Server {
 
     //services
     private final ClearService clearService;
+    private final UserService userService;
+    private final GameService gameService;
 
     //Handlers
     private final ClearHandler clearHandler;
+    private final UserHandler userHandler;
+    private final GameHandler gameHandler;
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -30,12 +35,20 @@ public class Server {
         gameDAO = new MemoryGameDAO();
         //Service initialization
         clearService = new ClearService(userDAO, authDAO, gameDAO);
+        userService = new UserService(userDAO, authDAO);
+        gameService = new GameService(authDAO, userDAO, gameDAO);
         //Handler initialization
         clearHandler = new ClearHandler(clearService);
-        // Register your endpoints and exception handlers here.
+        userHandler = new UserHandler(userService);
+        gameHandler = new GameHandler(gameService);
         // Register your endpoints and exception handlers here.
         javalin.delete("/db", clearHandler::handle);
+        javalin.post("/user", userHandler::register);
+        javalin.get("/game", gameHandler::listGames);
+        javalin.post("/game", gameHandler::createGame);
+        javalin.put("/game", gameHandler::joinGame);
     }
+
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
