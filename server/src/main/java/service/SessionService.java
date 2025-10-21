@@ -18,6 +18,10 @@ public class SessionService {
         this.gameDAO = gameDAO;
     }
 
+    public void login(String userName, String authToken) throws DataAccessException {
+        AuthData authData = authDAO.getAuth(authToken);
+
+    }
 
 
 }

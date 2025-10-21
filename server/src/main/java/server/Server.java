@@ -2,8 +2,6 @@ package server;
 
 import io.javalin.*;
 import dataaccess.*;
-import model.*;
-import org.eclipse.jetty.server.Authentication;
 import service.*;
 import server.handlers.*;
 
@@ -36,7 +34,7 @@ public class Server {
         //Service initialization
         clearService = new ClearService(userDAO, authDAO, gameDAO);
         userService = new UserService(userDAO, authDAO);
-        gameService = new GameService(authDAO, userDAO, gameDAO);
+        gameService = new GameService(authDAO, gameDAO);
         //Handler initialization
         clearHandler = new ClearHandler(clearService);
         userHandler = new UserHandler(userService);
