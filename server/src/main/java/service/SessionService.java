@@ -40,6 +40,15 @@ public class SessionService {
         return new LoginSessionResult(username, authToken);
     }
 
-    public void
+    public void logout(String authToken) throws DataAccessException {
+        if(authToken == null){
+            throw new DataAccessException("Error: bad request");
+        }
+        AuthData authData = authDAO.getAuth(authToken);
+        if(authData == null){
+            throw new DataAccessException("Error: unauthorized");
+        }
+        authDAO.deleteAuth(authToken);
+    }
 
 }
