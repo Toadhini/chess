@@ -1,5 +1,6 @@
 package server.handlers;
 
+import com.google.gson.Gson;
 import io.javalin.http.Context;
 import service.UserService;
 import model.*;
@@ -7,6 +8,7 @@ import dataaccess.DataAccessException;
 
 public class UserHandler {
     private final UserService userService;
+    private final Gson gson = new Gson();
 
     public UserHandler(UserService userService) {
         this.userService = userService;
@@ -22,7 +24,8 @@ public class UserHandler {
 
             // Send success response
             ctx.status(200);
-            ctx.json(result);
+            ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
 
         } catch (DataAccessException e) {
             // Handle errors with appropriate status codes
@@ -33,7 +36,8 @@ public class UserHandler {
             } else {
                 ctx.status(500);
             }
-            ctx.json(new RegisterResult(e.getMessage()));
+            ctx.result(gson.toJson(new RegisterResult(e.getMessage())));
+            ctx.contentType("application/json");
         }
     }
 }

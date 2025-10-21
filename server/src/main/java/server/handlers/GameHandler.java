@@ -1,5 +1,6 @@
 package server.handlers;
 
+import com.google.gson.Gson;
 import service.GameService;
 import model.*;
 import dataaccess.DataAccessException;
@@ -7,6 +8,7 @@ import io.javalin.http.Context;
 
 public class GameHandler {
     private final GameService gameService;
+    private final Gson gson = new Gson();
 
     public GameHandler(GameService gameService){
         this.gameService = gameService;
@@ -22,7 +24,8 @@ public class GameHandler {
             CreateGameResult result = gameService.createGame(request.gameName(), authToken);
 
             ctx.status(200);
-            ctx.json(result);
+            ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
 
         } catch (DataAccessException e) {
             //Error handling
@@ -33,7 +36,8 @@ public class GameHandler {
             } else {
                 ctx.status(500);
             }
-            ctx.json(new CreateGameResult(e.getMessage()));
+            ctx.result(gson.toJson(new CreateGameResult(e.getMessage())));
+            ctx.contentType("application/json");
         }
     }
     public void joinGame(Context ctx) {
@@ -49,7 +53,8 @@ public class GameHandler {
 
             // Send success response
             ctx.status(200);
-            ctx.json(new ResponseMessage(""));
+            ctx.result(gson.toJson(new ResponseMessage("")));
+            ctx.contentType("application/json");
 
         } catch (DataAccessException e) {
             // Handle errors with appropriate status codes
@@ -62,7 +67,8 @@ public class GameHandler {
             } else {
                 ctx.status(500);
             }
-            ctx.json(new ResponseMessage(e.getMessage()));
+            ctx.result(gson.toJson(new ResponseMessage(e.getMessage())));
+            ctx.contentType("application/json");
         }
     }
 
@@ -76,7 +82,8 @@ public class GameHandler {
 
             // Send success response
             ctx.status(200);
-            ctx.json(result);
+            ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
 
         } catch (DataAccessException e) {
             // Handle errors with appropriate status codes
@@ -85,7 +92,8 @@ public class GameHandler {
             } else {
                 ctx.status(500);
             }
-            ctx.json(new ListGamesResult(e.getMessage()));
+            ctx.result(gson.toJson(new ListGamesResult(e.getMessage())));
+            ctx.contentType("application/json");
         }
     }
 }

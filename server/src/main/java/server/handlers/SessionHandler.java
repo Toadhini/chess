@@ -1,5 +1,6 @@
 package server.handlers;
 
+import com.google.gson.Gson;
 import service.SessionService;
 import model.*;
 import dataaccess.DataAccessException;
@@ -8,6 +9,7 @@ import java.util.Map;
 
 public class SessionHandler {
     private final SessionService sessionService;
+    private final Gson gson = new Gson();
 
     public SessionHandler(SessionService sessionService) {
         this.sessionService = sessionService;
@@ -23,7 +25,8 @@ public class SessionHandler {
 
             // Send success response
             ctx.status(200);
-            ctx.json(result);
+            ctx.result(gson.toJson(result));
+            ctx.contentType("application/json");
 
         } catch (DataAccessException e) {
             // Handle errors with appropriate status codes
@@ -34,7 +37,8 @@ public class SessionHandler {
             } else {
                 ctx.status(500);
             }
-            ctx.json(new LoginSessionResult(e.getMessage()));
+            ctx.result(gson.toJson(new LoginSessionResult(e.getMessage())));
+            ctx.contentType("application/json");
         }
     }
     public void logout(Context ctx){
@@ -47,7 +51,8 @@ public class SessionHandler {
 
             // Send success response (empty JSON object)
             ctx.status(200);
-            ctx.json(Map.of());
+            ctx.result(gson.toJson(Map.of()));
+            ctx.contentType("application/json");
 
         } catch (DataAccessException e) {
             // Handle errors with appropriate status codes
@@ -56,7 +61,8 @@ public class SessionHandler {
             } else {
                 ctx.status(500);
             }
-            ctx.json(new LoginSessionResult(e.getMessage()));
+            ctx.result(gson.toJson(new LoginSessionResult(e.getMessage())));
+            ctx.contentType("application/json");
         }
     }
 
