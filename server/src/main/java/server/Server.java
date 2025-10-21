@@ -22,6 +22,7 @@ public class Server {
 
     //Handlers
     private final ClearHandler clearHandler;
+    private final UserHandler userHandler;
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"));
@@ -35,41 +36,12 @@ public class Server {
         userService = new UserService(userDAO, authDAO);
         //Handler initialization
         clearHandler = new ClearHandler(clearService);
+        userHandler = new UserHandler(userService);
         // Register your endpoints and exception handlers here.
-        registerEndpoints();
+        javalin.delete("/db", clearHandler::handle);
+        javalin.post("/user", userHandler::register);
     }
-    private void registerEndpoints() {
-        // Clear endpoint
-        javalin.delete("/db", ctx -> {
-            try {
-                clearService.clear();
-                ctx.status(200);
-                ctx.json(new ResponseMessage(""));
-            } catch (DataAccessException e) {
-                ctx.status(500);
-                ctx.json(new ResponseMessage("Error: " + e.getMessage()));
-            }
-        });
 
-        // Register endpoint
-        javalin.post("/user", ctx -> {
-            try {
-                UserData userData = ctx.bodyAsClass(UserData.class);
-                RegisterResult result = userService.register(userData);
-                ctx.status(200);
-                ctx.json(result);
-            } catch (DataAccessException e) {
-                if (e.getMessage().contains("bad request")) {
-                    ctx.status(400);
-                } else if (e.getMessage().contains("already taken")) {
-                    ctx.status(403);
-                } else {
-                    ctx.status(500);
-                }
-                ctx.json(new RegisterResult(e.getMessage()));
-            }
-        });
-    }
 
     public int run(int desiredPort) {
         javalin.start(desiredPort);
