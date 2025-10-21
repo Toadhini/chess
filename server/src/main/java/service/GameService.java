@@ -3,7 +3,6 @@ package service;
 import model.*;
 import dataaccess.*;
 import java.util.Collection;
-import chess.ChessGame;
 
 public class GameService {
     private final UserDAO userDAO;
@@ -30,7 +29,7 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-    public void JoinGame(Integer gameID, String playerColor, String authToken)throws DataAccessException{
+    public void joinGame(Integer gameID, String playerColor, String authToken)throws DataAccessException{
         AuthData authData = authDAO.getAuth(authToken);
 
         if(authToken == null){
