@@ -29,10 +29,10 @@ public class Server {
     private final SessionHandler sessionHandler;
 
     public Server() {
-        javalin = Javalin.create(config -> {
-            config.staticFiles.add("web");
-            config.jsonMapper(new JavalinJackson(new ObjectMapper()));
-        });
+            javalin = Javalin.create(config -> {
+                config.staticFiles.add("web");
+                config.bundledPlugins.enableDevLogging();
+            });
 
         //DAO initialization
         userDAO = new MemoryUserDAO();
