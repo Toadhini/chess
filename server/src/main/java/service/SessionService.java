@@ -25,7 +25,7 @@ public class SessionService {
         }
         //Get user information
         UserData user = userDAO.getUser(username);
-
+        //Checks for errors
         if(user == null){
             throw new DataAccessException("Error: unauthorized");
         }
