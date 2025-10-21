@@ -59,4 +59,94 @@ public class GameServiceTest {
 
         assertTrue(exception.getMessage().contains("bad request"));
     }
+
+    @Test
+    @DisplayName("List Games Successfully")
+    public void listGamesSuccess() throws DataAccessException {
+        // Create some games
+        gameService.createGame("Game1", validAuthToken);
+        gameService.createGame("Game2", validAuthToken);
+
+        ListGamesResult result = gameService.listGames(validAuthToken);
+
+        assertNotNull(result);
+        assertNotNull(result.games());
+        assertEquals(2, result.games().size());
+    }
+
+    @Test
+    @DisplayName("List Games with Invalid Auth Fails")
+    public void listGamesUnauthorized() {
+        DataAccessException exception = assertThrows(DataAccessException.class,
+                () -> gameService.listGames("invalidToken"));
+
+        assertTrue(exception.getMessage().contains("unauthorized"));
+    }
+
+    @Test
+    @DisplayName("Join Game Successfully")
+    public void joinGameSuccess() throws DataAccessException {
+        // Create a game
+        CreateGameResult createResult = gameService.createGame("TestGame", validAuthToken);
+        int gameID = createResult.gameID();
+
+        // Join as white
+        assertDoesNotThrow(() -> gameService.joinGame(gameID, "WHITE", validAuthToken));
+
+        // Verify player was added
+        GameData game = gameDAO.getGame(gameID);
+        assertEquals("testUser", game.whiteUsername());
+        assertNull(game.blackUsername());
+    }
+
+    @Test
+    @DisplayName("Join Game with Invalid Auth Fails")
+    public void joinGameUnauthorized() throws DataAccessException {
+        CreateGameResult createResult = gameService.createGame("TestGame", validAuthToken);
+
+        DataAccessException exception = assertThrows(DataAccessException.class,
+                () -> gameService.joinGame(createResult.gameID(), "WHITE", "invalidToken"));
+
+        assertTrue(exception.getMessage().contains("unauthorized"));
+    }
+
+    @Test
+    @DisplayName("Join Already Taken Color Fails")
+    public void joinGameAlreadyTaken() throws DataAccessException {
+        // Create game and join as white
+        CreateGameResult createResult = gameService.createGame("TestGame", validAuthToken);
+        gameService.joinGame(createResult.gameID(), "WHITE", validAuthToken);
+
+        // Create second user
+        String secondToken = "secondToken456";
+        userDAO.createUser(new UserData("secondUser", "pass", "second@test.com"));
+        authDAO.createAuth(new AuthData(secondToken, "secondUser"));
+
+        // Try to join same color
+        DataAccessException exception = assertThrows(DataAccessException.class,
+                () -> gameService.joinGame(createResult.gameID(), "WHITE", secondToken));
+
+        assertTrue(exception.getMessage().contains("already taken"));
+    }
+
+    @Test
+    @DisplayName("Join Game with Bad Request Fails")
+    public void joinGameBadRequest() throws DataAccessException {
+        CreateGameResult createResult = gameService.createGame("TestGame", validAuthToken);
+
+        // Null gameID
+        DataAccessException exception1 = assertThrows(DataAccessException.class,
+                () -> gameService.joinGame(null, "WHITE", validAuthToken));
+        assertTrue(exception1.getMessage().contains("bad request"));
+
+        // Null color
+        DataAccessException exception2 = assertThrows(DataAccessException.class,
+                () -> gameService.joinGame(createResult.gameID(), null, validAuthToken));
+        assertTrue(exception2.getMessage().contains("bad request"));
+
+        // Invalid color
+        DataAccessException exception3 = assertThrows(DataAccessException.class,
+                () -> gameService.joinGame(createResult.gameID(), "GREEN", validAuthToken));
+        assertTrue(exception3.getMessage().contains("bad request"));
+    }
 }
