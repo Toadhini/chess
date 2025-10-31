@@ -74,4 +74,38 @@ public class MySQLUserDAOTest {
         assertNull(retrieved);
     }
 
+    @Test
+    @Order(5)
+    @DisplayName("Clear Users - Positive")
+    public void clearUsersPositive() throws DataAccessException {
+        // Add multiple users
+        userDAO.createUser(new UserData("user1", "pass1", "email1@test.com"));
+        userDAO.createUser(new UserData("user2", "pass2", "email2@test.com"));
+        userDAO.createUser(new UserData("user3", "pass3", "email3@test.com"));
+
+        // Verify users exist
+        assertNotNull(userDAO.getUser("user1"));
+        assertNotNull(userDAO.getUser("user2"));
+
+        // Clear all users
+        assertDoesNotThrow(() -> userDAO.clear());
+
+        // Verify all users are gone
+        assertNull(userDAO.getUser("user1"));
+        assertNull(userDAO.getUser("user2"));
+        assertNull(userDAO.getUser("user3"));
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Clear Users - Negative (Clear Empty Table)")
+    public void clearUsersNegative() throws DataAccessException {
+        // Clear already empty table should not throw exception
+        userDAO.clear();
+        assertDoesNotThrow(() -> userDAO.clear());
+
+        // Verify still empty
+        assertNull(userDAO.getUser("anyuser"));
+    }
+
 }
