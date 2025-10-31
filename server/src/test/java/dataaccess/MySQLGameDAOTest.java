@@ -139,5 +139,43 @@ public class MySQLGameDAOTest {
         });
     }
 
+    // clear Tests
+    @Test
+    @Order(9)
+    @DisplayName("Clear Games - Positive")
+    public void clearGamesPositive() throws DataAccessException {
+        // Add multiple games
+        int id1 = gameDAO.createGame("Game 1");
+        int id2 = gameDAO.createGame("Game 2");
+        int id3 = gameDAO.createGame("Game 3");
 
+        // Verify games exist
+        assertNotNull(gameDAO.getGame(id1));
+        assertNotNull(gameDAO.getGame(id2));
+
+        // Clear all games
+        assertDoesNotThrow(() -> gameDAO.clear());
+
+        // Verify all games are gone
+        assertNull(gameDAO.getGame(id1));
+        assertNull(gameDAO.getGame(id2));
+        assertNull(gameDAO.getGame(id3));
+
+        // Verify list is empty
+        Collection<GameData> games = gameDAO.listGames();
+        assertTrue(games.isEmpty());
+    }
+
+    @Test
+    @Order(10)
+    @DisplayName("Clear Games - Negative (Clear Empty Table)")
+    public void clearGamesNegative() throws DataAccessException {
+        // Clear already empty table should not throw exception
+        gameDAO.clear();
+        assertDoesNotThrow(() -> gameDAO.clear());
+
+        // Verify still empty
+        Collection<GameData> games = gameDAO.listGames();
+        assertTrue(games.isEmpty());
+    }
 }
