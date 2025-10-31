@@ -70,8 +70,30 @@ public class MySQLAuthDAOTest {
         assertNull(retrieved);
     }
 
+    // deleteAuth Tests
+    @Test
+    @Order(5)
+    @DisplayName("Delete Auth - Positive")
+    public void deleteAuthPositive() throws DataAccessException {
+        AuthData auth = new AuthData("deleteToken", "deleteUser");
+        authDAO.createAuth(auth);
 
+        // Verify auth exists
+        assertNotNull(authDAO.getAuth("deleteToken"));
 
+        // Delete auth
+        assertDoesNotThrow(() -> authDAO.deleteAuth("deleteToken"));
 
+        // Verify auth is gone
+        assertNull(authDAO.getAuth("deleteToken"));
+    }
+
+    @Test
+    @Order(6)
+    @DisplayName("Delete Auth - Negative (Delete Non-existent)")
+    public void deleteAuthNegative() throws DataAccessException {
+        // Deleting non-existent auth should not throw exception
+        assertDoesNotThrow(() -> authDAO.deleteAuth("nonexistentToken"));
+    }
 
 }
