@@ -49,5 +49,27 @@ public class MySQLGameDAOTest {
         assertThrows(DataAccessException.class, () -> gameDAO.createGame(null));
     }
 
+    // getGame Tests
+    @Test
+    @Order(3)
+    @DisplayName("Get Game - Positive")
+    public void getGamePositive() throws DataAccessException {
+        int gameID = gameDAO.createGame("Get Test Game");
+
+        GameData retrieved = gameDAO.getGame(gameID);
+        assertNotNull(retrieved);
+        assertEquals(gameID, retrieved.gameID());
+        assertEquals("Get Test Game", retrieved.gameName());
+        assertNotNull(retrieved.game());
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Get Game - Negative (Game Not Found)")
+    public void getGameNegative() throws DataAccessException {
+        GameData retrieved = gameDAO.getGame(99999);
+        assertNull(retrieved);
+    }
+
 
 }
