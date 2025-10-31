@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Collection;
 import java.util.UUID;
 import io.javalin.http.Context;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class SessionService {
     private final AuthDAO authDAO;
@@ -29,7 +30,7 @@ public class SessionService {
         if(user == null){
             throw new DataAccessException("Error: unauthorized");
         }
-        if(!user.password().equals(password)){
+        if(!BCrypt.checkpw(password, user.password())){
             throw new DataAccessException("Error: unauthorized");
         }
         String authToken = UUID.randomUUID().toString();
