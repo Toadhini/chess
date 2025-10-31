@@ -51,4 +51,27 @@ public class MySQLUserDAOTest {
         assertThrows(DataAccessException.class, () -> userDAO.createUser(user2));
     }
 
+    // getUser Tests
+    @Test
+    @Order(3)
+    @DisplayName("Get User - Positive")
+    public void getUserPositive() throws DataAccessException {
+        UserData user = new UserData("gettest", "mypassword", "get@test.com");
+        userDAO.createUser(user);
+
+        UserData retrieved = userDAO.getUser("gettest");
+        assertNotNull(retrieved);
+        assertEquals("gettest", retrieved.username());
+        assertEquals("get@test.com", retrieved.email());
+        assertTrue(BCrypt.checkpw("mypassword", retrieved.password()));
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Get User - Negative (User Not Found)")
+    public void getUserNegative() throws DataAccessException {
+        UserData retrieved = userDAO.getUser("nonexistent");
+        assertNull(retrieved);
+    }
+
 }
