@@ -96,4 +96,39 @@ public class MySQLAuthDAOTest {
         assertDoesNotThrow(() -> authDAO.deleteAuth("nonexistentToken"));
     }
 
+    // clear Tests
+    @Test
+    @Order(7)
+    @DisplayName("Clear Auth - Positive")
+    public void clearAuthPositive() throws DataAccessException {
+        // Add multiple auth tokens
+        authDAO.createAuth(new AuthData("token1", "user1"));
+        authDAO.createAuth(new AuthData("token2", "user2"));
+        authDAO.createAuth(new AuthData("token3", "user3"));
+
+        // Verify tokens exist
+        assertNotNull(authDAO.getAuth("token1"));
+        assertNotNull(authDAO.getAuth("token2"));
+
+        // Clear all auth tokens
+        assertDoesNotThrow(() -> authDAO.clear());
+
+        // Verify all tokens are gone
+        assertNull(authDAO.getAuth("token1"));
+        assertNull(authDAO.getAuth("token2"));
+        assertNull(authDAO.getAuth("token3"));
+    }
+
+    @Test
+    @Order(8)
+    @DisplayName("Clear Auth - Negative (Clear Empty Table)")
+    public void clearAuthNegative() throws DataAccessException {
+        // Clear already empty table should not throw exception
+        authDAO.clear();
+        assertDoesNotThrow(() -> authDAO.clear());
+
+        // Verify still empty
+        assertNull(authDAO.getAuth("anytoken"));
+    }
+
 }
