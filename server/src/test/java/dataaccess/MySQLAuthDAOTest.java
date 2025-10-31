@@ -48,5 +48,30 @@ public class MySQLAuthDAOTest {
         assertThrows(DataAccessException.class, () -> authDAO.createAuth(auth2));
     }
 
+    // getAuth tests
+    @Test
+    @Order(3)
+    @DisplayName("Get Auth - Positive")
+    public void getAuthPositive() throws DataAccessException{
+        AuthData auth = new AuthData("getToken", "getUser");
+        authDAO.createAuth(auth);
+
+        AuthData retrieved = authDAO.getAuth("getToken");
+        assertNotNull(retrieved);
+        assertEquals("getToken", retrieved.authToken());
+        assertEquals("getUser", retrieved.username());
+    }
+
+    @Test
+    @Order(4)
+    @DisplayName("Get Auth - Negative")
+    public void getAuthNegative() throws DataAccessException{
+        AuthData retrieved = authDAO.getAuth("nonexistentToken");
+        assertNull(retrieved);
+    }
+
+
+
+
 
 }
