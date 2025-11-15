@@ -17,8 +17,16 @@ public class ServerFacade {
         this.serverUrl = "http://localhost:" + port;
     }
 
-    public AuthData register(String username, String password, String email) throws Exception{
+    //Register function for users to register within client
 
+    public AuthData register(String username, String password, String email) throws Exception{
+        UserData userData = new UserData(username, password, email);
+        RegisterResult registerResult = makeRequest("POST", "/user", userData, RegisterResult.class, null);
+
+        if(registerResult.message() != null){
+            throw new Exception(registerResult.message());
+        }
+        return new AuthData(registerResult.authToken(), registerResult.username());
     }
 
      //Helper Method for making HTTP requests to the server
