@@ -56,6 +56,7 @@ public class ChessClient {
     }
 
     //Functions to help loop
+    //getPrompt function
     private String getPrompt(){
         if (state == State.PRELOGIN){
             return "\n" + SET_TEXT_COLOR_GREEN + "[LOGGED OUT] >>> " + RESET_TEXT_COLOR;
@@ -64,6 +65,22 @@ public class ChessClient {
         }
     }
 
+    //eval function
+    private String eval(String line) {
+        String[] tokens = line.split("\\s+");
+        String command = tokens[0].toLowerCase();
+        String[] args = new String[tokens.length - 1];
+        System.arraycopy(tokens, 1, args, 0, tokens.length - 1);
 
+        try {
+            if (state == State.PRELOGIN) {
+                return evalPrelogin(command, args);
+            } else {
+                return evalPostlogin(command, args);
+            }
+        } catch (Exception e) {
+            return SET_TEXT_COLOR_RED + "Error: " + e.getMessage() + RESET_TEXT_COLOR;
+        }
+    }
 
 }
