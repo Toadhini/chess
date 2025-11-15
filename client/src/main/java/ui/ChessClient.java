@@ -115,5 +115,47 @@ public class ChessClient {
         }
     }
     //To handle post-login commands
+    private String evalPostlogin(String command, String[] args) throws Exception {
+        PostloginUI postloginUI = new PostloginUI(serverFacade, authToken); //Also creeate this after this file
 
+        switch (command) {
+            case "help":
+                return postloginUI.help();
+            case "logout":
+                postloginUI.logout();
+                this.authToken = null;
+                this.username = null;
+                this.state = State.PRELOGIN;
+                return SET_TEXT_COLOR_GREEN + "Successfully logged out" + RESET_TEXT_COLOR;
+            case "create":
+                if (args.length != 1) {
+                    return "Usage: create <gameName>";
+                }
+                return postloginUI.createGame(args[0]);
+            case "list":
+                return postloginUI.listGames();
+            case "play":
+                if (args.length != 2) {
+                    return "Usage: play <gameNumber> <WHITE|BLACK>";
+                }
+                try {
+                    int gameNum = Integer.parseInt(args[0]);
+                    return postloginUI.playGame(gameNum, args[1].toUpperCase());
+                } catch (NumberFormatException e) {
+                    return "Game number must be a valid integer";
+                }
+            case "observe":
+                if (args.length != 1) {
+                    return "Usage: observe <gameNumber>";
+                }
+                try {
+                    int gameNum = Integer.parseInt(args[0]);
+                    return postloginUI.observeGame(gameNum);
+                } catch (NumberFormatException e) {
+                    return "Game number must be a valid integer";
+                }
+            default:
+                return "Unknown command. Type 'help' for available commands.";
+        }
+    }
 }
