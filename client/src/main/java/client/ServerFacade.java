@@ -29,6 +29,18 @@ public class ServerFacade {
         return new AuthData(registerResult.authToken(), registerResult.username());
     }
 
+    //Login function for users to login within client
+
+    public AuthData login(String username, String password) throws Exception{
+        LoginSessionRequest request = new LoginSessionRequest(username, password);
+        LoginSessionResult result = makeRequest("POST", "/session", request, LoginSessionResult.class, null);
+
+        if (result.message() != null){
+            throw new Exception(result.message());
+        }
+
+        return new AuthData(result.authToken(), result.username());
+    }
      //Helper Method for making HTTP requests to the server
 
 
