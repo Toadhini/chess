@@ -83,4 +83,37 @@ public class ChessClient {
         }
     }
 
+    //To handle pre-login commands
+    private String evalPrelogin(String command, String[] args) throws Exception {
+        PreloginUI preloginUI = new PreloginUI(serverFacade); //Set up UI after this file
+
+        switch (command) {
+            case "help":
+                return preloginUI.help();
+            case "quit":
+                return "QUIT";
+            case "register":
+                if (args.length != 3) {
+                    return "Usage: register <username> <password> <email>";
+                }
+                var registerResult = preloginUI.register(args[0], args[1], args[2]);
+                this.authToken = registerResult.authToken();
+                this.username = registerResult.username();
+                this.state = State.POSTLOGIN;
+                return SET_TEXT_COLOR_GREEN + "Successfully registered and logged in as " + username + RESET_TEXT_COLOR;
+            case "login":
+                if (args.length != 2) {
+                    return "Usage: login <username> <password>";
+                }
+                var loginResult = preloginUI.login(args[0], args[1]);
+                this.authToken = loginResult.authToken();
+                this.username = loginResult.username();
+                this.state = State.POSTLOGIN;
+                return SET_TEXT_COLOR_GREEN + "Successfully logged in as " + username + RESET_TEXT_COLOR;
+            default:
+                return "Unknown command. Type 'help' for available commands.";
+        }
+    }
+    //To handle post-login commands
+
 }
