@@ -1,8 +1,11 @@
 import chess.*;
+import ui.ChessClient;
 
 public class Main {
     public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+        // Default port is 8080, but you can change it if needed
+        int port = 8080;
+        ChessClient client = new ChessClient(port);
+        client.run();
     }
 }
