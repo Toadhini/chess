@@ -52,6 +52,18 @@ public class ChessClient {
            }
        }
        System.out.println("GoodBye! Hope you play again soon!");
-       scanner.close; //Create function
+       scanner.close();
     }
+
+    //Functions to help loop
+    private String getPrompt(){
+        if (state == State.PRELOGIN){
+            return "\n" + SET_TEXT_COLOR_GREEN + "[LOGGED OUT] >>> " + RESET_TEXT_COLOR;
+        } else{
+            return "\n" + SET_TEXT_COLOR_BLUE + "[" + username + "] >>> " + RESET_TEXT_COLOR;
+        }
+    }
+
+
+
 }
