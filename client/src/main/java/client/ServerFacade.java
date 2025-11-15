@@ -73,12 +73,71 @@ public class ServerFacade {
         JoinGameRequest request = new JoinGameRequest(playerColer, gameID);
         makeRequest("PUT", "/game", request, null, authToken);
     }
+
      //Helper Method for making HTTP requests to the server
 
-    private <T> T makeRequest(String method, String path, Object requestBody, Class<T> responseClass, String authToken) throws IOException, InterruptedException {
-        HttpClient client = HttpClient.newHttpClient();
-        URI uri = URI.create(serverUrl + path);
+    private <T> T makeRequest(String method, String path, Object requestBody, Class<T> responseClass, String authToken) throws Exception {
+        try {
+            //Create HTTP client
+            HttpClient client = HttpClient.newHttpClient();
+            URI uri = URI.create(serverUrl + path);
 
+            //Build request
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header("Content-Type", "application/json");
 
+            //Add authorization header if provided
+            if (authToken != null) {
+                requestBuilder.header("authorization", authToken);
+            }
+
+            //Set method and body
+            if (method.equals("GET")) {
+                requestBuilder.GET();
+            } else if (method.equals("DELETE")) {
+                requestBuilder.DELETE();
+            } else if (method.equals("POST")) {
+                String bodyJson = requestBody != null ? gson.toJson(requestBody) : "";
+                requestBuilder.POST(HttpRequest.BodyPublishers.ofString(bodyJson));
+            } else if (method.equals("PUT")) {
+                String bodyJson = requestBody != null ? gson.toJson(requestBody) : "";
+                requestBuilder.PUT(HttpRequest.BodyPublishers.ofString(bodyJson));
+            }
+
+            HttpRequest request = requestBuilder.build();
+
+            //Send request and get response
+            HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+            //Check status code
+            int statusCode = response.statusCode();
+
+            //Handle error status codes
+            if (statusCode != 200) {
+                //Try to parse error message from response
+                try (InputStream respBody = response.body()) {
+                    InputStreamReader reader = new InputStreamReader(respBody);
+                    ResponseMessage errorMsg = gson.fromJson(reader, ResponseMessage.class);
+                    String message = errorMsg != null && errorMsg.getMessage() != null
+                            ? errorMsg.getMessage()
+                            : "Request failed with status code: " + statusCode;
+                    throw new Exception(message);
+                }
+            }
+
+            //Parse successful response
+            if (responseClass != null) {
+                try (InputStream respBody = response.body()) {
+                    InputStreamReader reader = new InputStreamReader(respBody);
+                    return gson.fromJson(reader, responseClass);
+                }
+            }
+
+            return null;
+
+        } catch (IOException | InterruptedException e) {
+            throw new Exception("Network error: " + e.getMessage());
+        }
     }
 }
