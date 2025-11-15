@@ -2,7 +2,10 @@ package client;
 
 import com.google.gson.Gson;
 import model.*;
+import chess.*;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.http.*;
 
@@ -14,9 +17,12 @@ public class ServerFacade {
         this.serverUrl = "http://localhost:" + port;
     }
 
-    /**
-     * Helper Method for making HTTP requests to the server
-     */
+    public AuthData register(String username, String password, String email) throws Exception{
+
+    }
+
+     //Helper Method for making HTTP requests to the server
+
 
     private <T> T makeRequest(String method, String path, Object requestBody, Class<T> responseClass, String authToken) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
