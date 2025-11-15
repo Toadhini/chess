@@ -54,7 +54,18 @@ public class ServerFacade {
         return makeRequest("GET", "/game", null,ListGamesResult.class, authToken);
     }
 
+    //Create a game function
 
+    public CreateGameResult createGame(String authToken, String gameName)throws Exception{
+        CreateGameRequest request = new CreateGameRequest(gameName);
+        CreateGameResult result = makeRequest("POST", "/game", request, CreateGameResult.class, authToken);
+
+        if(result.message() != null){
+            throw new Exception(result.message());
+        }
+
+        return result;
+    }
      //Helper Method for making HTTP requests to the server
 
 
