@@ -41,6 +41,13 @@ public class ServerFacade {
 
         return new AuthData(result.authToken(), result.username());
     }
+
+    //Logout function for users to logout of client
+
+    public void logout(String authToken) throws Exception{
+        makeRequest("DELETE", "/session", null, null, authToken);
+    }
+
      //Helper Method for making HTTP requests to the server
 
 
