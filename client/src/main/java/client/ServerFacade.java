@@ -66,8 +66,14 @@ public class ServerFacade {
 
         return result;
     }
-     //Helper Method for making HTTP requests to the server
 
+    //Join game function
+
+    public void joinGame(String authToken, int gameID, String playerColer)throws Exception{
+        JoinGameRequest request = new JoinGameRequest(playerColer, gameID);
+        makeRequest("PUT", "/game", request, null, authToken);
+    }
+     //Helper Method for making HTTP requests to the server
 
     private <T> T makeRequest(String method, String path, Object requestBody, Class<T> responseClass, String authToken) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
