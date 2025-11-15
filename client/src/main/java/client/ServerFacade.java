@@ -48,6 +48,13 @@ public class ServerFacade {
         makeRequest("DELETE", "/session", null, null, authToken);
     }
 
+    //List game function
+
+    public ListGamesResult listGames(String authToken)throws Exception{
+        return makeRequest("GET", "/game", null,ListGamesResult.class, authToken);
+    }
+
+
      //Helper Method for making HTTP requests to the server
 
 
