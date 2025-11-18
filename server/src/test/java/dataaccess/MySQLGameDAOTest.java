@@ -114,7 +114,6 @@ public class MySQLGameDAOTest {
 
         // Verify update
         GameData retrieved = gameDAO.getGame(gameID);
-        assertNotNull(retrieved);
         assertEquals("whitePlayer", retrieved.whiteUsername());
         assertEquals("blackPlayer", retrieved.blackUsername());
         assertEquals("Update Test", retrieved.gameName());
@@ -123,7 +122,7 @@ public class MySQLGameDAOTest {
     @Test
     @Order(8)
     @DisplayName("Update Game - Negative (Non-existent Game)")
-    public void updateGameNegative() {
+    public void updateGameNegative() throws DataAccessException {
         ChessGame game = new ChessGame();
         GameData nonExistent = new GameData(99999, "white", "black", "Fake Game", game);
 
@@ -131,12 +130,8 @@ public class MySQLGameDAOTest {
         assertDoesNotThrow(() -> gameDAO.updateGame(nonExistent));
 
         // Verify game still doesn't exist
-        assertThrows(DataAccessException.class, () -> {
-            GameData retrieved = gameDAO.getGame(99999);
-            if (retrieved == null) {
-                throw new DataAccessException("Game not found");
-            }
-        });
+        GameData retrieved = gameDAO.getGame(99999);
+        assertNull(retrieved, "Non-existent game should not be found after update attempt");
     }
 
     // clear Tests
