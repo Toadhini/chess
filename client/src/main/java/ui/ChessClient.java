@@ -116,8 +116,6 @@ public class ChessClient {
         }
     }
     //To handle post-login commands
-    private PostloginUI postloginUI; //class field to help persist
-
     private String evalPostlogin(String command, String[] args) throws Exception {
         if (postloginUI == null) {
             postloginUI = new PostloginUI(serverFacade, authToken);
@@ -131,6 +129,7 @@ public class ChessClient {
                 this.authToken = null;
                 this.username = null;
                 this.state = State.PRELOGIN;
+                this.postloginUI = null;
                 return SET_TEXT_COLOR_GREEN + "Successfully logged out" + RESET_TEXT_COLOR;
             case "create":
                 if (args.length != 1) {
