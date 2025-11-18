@@ -115,8 +115,12 @@ public class ChessClient {
         }
     }
     //To handle post-login commands
+    private PostloginUI postloginUI; //class field to help persist
+
     private String evalPostlogin(String command, String[] args) throws Exception {
-        PostloginUI postloginUI = new PostloginUI(serverFacade, authToken); //Also creeate this after this file
+        if (postloginUI == null) {
+            postloginUI = new PostloginUI(serverFacade, authToken);
+        }
 
         switch (command) {
             case "help":
