@@ -27,34 +27,40 @@ public class GameService {
         return new CreateGameResult(gameID);
     }
 
-    public void joinGame(Integer gameID, String playerColor, String authToken)throws DataAccessException{
+    public void joinGame(Integer gameID, String playerColor, String authToken) throws DataAccessException {
         AuthData authData = authDAO.getAuth(authToken);
 
-        if(authData == null){
+        if (authData == null) {
             throw new DataAccessException("Error: unauthorized");
         }
-        if(gameID == null || playerColor == null){
-            throw new DataAccessException("Error: bad request");
-        }
-        if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+        if (gameID == null) {
             throw new DataAccessException("Error: bad request");
         }
 
         GameData game = gameDAO.getGame(gameID);
-        if(game == null){
+        if (game == null) {
             throw new DataAccessException("Error: bad request");
         }
 
+        // If playerColor is null, user is joining as observer (no update needed)
+        if (playerColor == null) {
+            // Observer - no need to update game, just verify they can access it
+            return;
+        }
+
+        // Validate playerColor for players
+        if (!playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+            throw new DataAccessException("Error: bad request");
+        }
         String username = authData.username();
-        if(playerColor.equals("WHITE")){
-            if(game.whiteUsername() != null){
+        if (playerColor.equals("WHITE")) {
+            if (game.whiteUsername() != null) {
                 throw new DataAccessException("Error: already taken");
             }
             GameData updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
             gameDAO.updateGame(updatedGame);
-        }
-        else{
-            if(game.blackUsername() != null){
+        } else {
+            if (game.blackUsername() != null) {
                 throw new DataAccessException("Error: already taken");
             }
             GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());

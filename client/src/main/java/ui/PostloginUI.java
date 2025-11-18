@@ -135,25 +135,33 @@ public class PostloginUI {
             return "Invalid game number. Use 'list' to see available games.";
         }
 
-        serverFacade.joinGame(authToken, gameID, null);
+        try {
+            serverFacade.joinGame(authToken, gameID, null);
 
-        // Get the game data to draw the board
-        ListGamesResult result = serverFacade.listGames(authToken);
-        GameData gameData = null;
-        for (GameData game : result.games()) {
-            if (game.gameID() == gameID) {
-                gameData = game;
-                break;
+            // Get the game data to draw the board
+            ListGamesResult result = serverFacade.listGames(authToken);
+            GameData gameData = null;
+            for (GameData game : result.games()) {
+                if (game.gameID() == gameID) {
+                    gameData = game;
+                    break;
+                }
             }
-        }
 
-        if (gameData != null && gameData.game() != null) {
-            System.out.println(SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR);
-            // Observers see from white's perspective
-            BoardDrawer.drawBoard(gameData.game(), ChessGame.TeamColor.WHITE);
-            return "";
-        } else {
-            return SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR;
+            if (gameData != null && gameData.game() != null) {
+                System.out.println(SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR);
+                // Observers see from white's perspective
+                BoardDrawer.drawBoard(gameData.game(), ChessGame.TeamColor.WHITE);
+                return "";
+            } else {
+                return SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR;
+            }
+        } catch (Exception e) {
+            // Provide a more helpful error message
+            if (e.getMessage().contains("bad request")) {
+                return "Cannot observe: You may already be playing in this game. Try observing a different game.";
+            }
+            throw e; // Re-throw other exceptions
         }
     }
 }
