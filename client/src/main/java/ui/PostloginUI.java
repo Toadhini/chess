@@ -2,6 +2,7 @@ package ui;
 
 import client.ServerFacade;
 import model.*;
+import chess.*;
 import java.util.*;
 
 import static ui.EscapeSequences.*;
@@ -104,9 +105,25 @@ public class PostloginUI {
 
         serverFacade.joinGame(authToken, gameID, color);
 
-        // TODO: Draw the board (will implement in next step)
-        return SET_TEXT_COLOR_GREEN + "Joined game as " + color + RESET_TEXT_COLOR +
-                "\n(Board drawing will be implemented in the next step)";
+        // Get the game data to draw the board
+        ListGamesResult result = serverFacade.listGames(authToken);
+        GameData gameData = null;
+        for (GameData game : result.games()) {
+            if (game.gameID() == gameID) {
+                gameData = game;
+                break;
+            }
+        }
+
+        if (gameData != null && gameData.game() != null) {
+            System.out.println(SET_TEXT_COLOR_GREEN + "Joined game as " + color + RESET_TEXT_COLOR);
+            ChessGame.TeamColor perspective = color.equals("WHITE") ?
+                    ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
+            BoardDrawer.drawBoard(gameData.game(), perspective);
+            return "";
+        } else {
+            return SET_TEXT_COLOR_GREEN + "Joined game as " + color + RESET_TEXT_COLOR;
+        }
     }
 
     /**
@@ -120,8 +137,23 @@ public class PostloginUI {
 
         serverFacade.joinGame(authToken, gameID, null);
 
-        // TODO: Draw the board (will implement in next step)
-        return SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR +
-                "\n(Board drawing will be implemented in the next step)";
+        // Get the game data to draw the board
+        ListGamesResult result = serverFacade.listGames(authToken);
+        GameData gameData = null;
+        for (GameData game : result.games()) {
+            if (game.gameID() == gameID) {
+                gameData = game;
+                break;
+            }
+        }
+
+        if (gameData != null && gameData.game() != null) {
+            System.out.println(SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR);
+            // Observers see from white's perspective
+            BoardDrawer.drawBoard(gameData.game(), ChessGame.TeamColor.WHITE);
+            return "";
+        } else {
+            return SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR;
+        }
     }
 }
