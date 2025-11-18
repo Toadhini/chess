@@ -10,6 +10,7 @@ public class ChessClient {
     private String authToken = null;
     private String username = null;
     private State state = State.PRELOGIN;
+    private PostloginUI postloginUI = null;
 
     private enum State{
         PRELOGIN,
