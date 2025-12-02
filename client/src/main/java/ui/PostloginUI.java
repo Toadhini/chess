@@ -157,11 +157,7 @@ public class PostloginUI {
                 return SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR;
             }
         } catch (Exception e) {
-            // Provide a more helpful error message
-            if (e.getMessage().contains("bad request")) {
-                return "Cannot observe: You may already be playing in this game. Try observing a different game.";
-            }
-            throw e; // Re-throw other exceptions
+            throw e; // Re-throw exceptions
         }
     }
 }

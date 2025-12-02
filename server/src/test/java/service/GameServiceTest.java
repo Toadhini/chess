@@ -139,14 +139,41 @@ public class GameServiceTest {
                 () -> gameService.joinGame(null, "WHITE", validAuthToken));
         assertTrue(exception1.getMessage().contains("bad request"));
 
-        // Null color
+        // Invalid color (null is valid for observers)
         DataAccessException exception2 = assertThrows(DataAccessException.class,
-                () -> gameService.joinGame(createResult.gameID(), null, validAuthToken));
-        assertTrue(exception2.getMessage().contains("bad request"));
-
-        // Invalid color
-        DataAccessException exception3 = assertThrows(DataAccessException.class,
                 () -> gameService.joinGame(createResult.gameID(), "GREEN", validAuthToken));
-        assertTrue(exception3.getMessage().contains("bad request"));
+        assertTrue(exception2.getMessage().contains("bad request"));
+    }
+
+    @Test
+    @DisplayName("Join Game as Observer Successfully")
+    public void joinGameAsObserver() throws DataAccessException {
+        // Create a game and join as white
+        CreateGameResult createResult = gameService.createGame("TestGame", validAuthToken);
+        gameService.joinGame(createResult.gameID(), "WHITE", validAuthToken);
+
+        // Observe the same game (null color = observer)
+        assertDoesNotThrow(() -> gameService.joinGame(createResult.gameID(), null, validAuthToken));
+
+        // Verify game state hasn't changed
+        GameData game = gameDAO.getGame(createResult.gameID());
+        assertEquals("testUser", game.whiteUsername());
+        assertNull(game.blackUsername());
+    }
+
+    @Test
+    @DisplayName("Rejoin Game with Same Color Successfully")
+    public void rejoinGameSameColor() throws DataAccessException {
+        // Create a game and join as white
+        CreateGameResult createResult = gameService.createGame("TestGame", validAuthToken);
+        gameService.joinGame(createResult.gameID(), "WHITE", validAuthToken);
+
+        // Rejoin as white (should succeed without error)
+        assertDoesNotThrow(() -> gameService.joinGame(createResult.gameID(), "WHITE", validAuthToken));
+
+        // Verify game state is still correct
+        GameData game = gameDAO.getGame(createResult.gameID());
+        assertEquals("testUser", game.whiteUsername());
+        assertNull(game.blackUsername());
     }
 }

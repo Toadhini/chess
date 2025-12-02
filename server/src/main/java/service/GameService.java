@@ -42,8 +42,13 @@ public class GameService {
             throw new DataAccessException("Error: bad request");
         }
 
-        // Validate playerColor - must be "WHITE" or "BLACK" (required field)
-        if (playerColor == null || playerColor.isEmpty() || 
+        // If playerColor is null, treat as observer (no action needed)
+        if (playerColor == null) {
+            return; // Observers don't modify the game
+        }
+
+        // Validate playerColor - must be "WHITE" or "BLACK"
+        if (playerColor.isEmpty() || 
             (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))) {
             throw new DataAccessException("Error: bad request");
         }
@@ -51,17 +56,25 @@ public class GameService {
         // Join as a player
         String username = authData.username();
         if (playerColor.equals("WHITE")) {
-            if (game.whiteUsername() != null) {
+            // Allow rejoining if already the white player, otherwise check if taken
+            if (game.whiteUsername() != null && !game.whiteUsername().equals(username)) {
                 throw new DataAccessException("Error: already taken");
             }
-            GameData updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
-            gameDAO.updateGame(updatedGame);
+            // Only update if not already the white player
+            if (game.whiteUsername() == null) {
+                GameData updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+                gameDAO.updateGame(updatedGame);
+            }
         } else {
-            if (game.blackUsername() != null) {
+            // Allow rejoining if already the black player, otherwise check if taken
+            if (game.blackUsername() != null && !game.blackUsername().equals(username)) {
                 throw new DataAccessException("Error: already taken");
             }
-            GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
-            gameDAO.updateGame(updatedGame);
+            // Only update if not already the black player
+            if (game.blackUsername() == null) {
+                GameData updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+                gameDAO.updateGame(updatedGame);
+            }
         }
     }
 

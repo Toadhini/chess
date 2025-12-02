@@ -2,14 +2,13 @@ package ui;
 
 import chess.*;
 import static ui.EscapeSequences.*;
-
 /**
  * Draws a chess board in the terminal with proper colors and piece placement
  */
 public class BoardDrawer {
 
-    private static final String LIGHT_SQUARE = SET_BG_COLOR_WHITE;
-    private static final String DARK_SQUARE = SET_BG_COLOR_DARK_GREEN;
+    private static final String LIGHT_SQUARE = SET_BG_COLOR_DARK_GREEN;
+    private static final String DARK_SQUARE = SET_BG_COLOR_WHITE;
     private static final String BORDER_COLOR = SET_BG_COLOR_LIGHT_GREY;
 
     /**
