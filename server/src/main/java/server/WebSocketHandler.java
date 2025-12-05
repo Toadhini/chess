@@ -9,13 +9,13 @@ import commands.UserGameCommand;
 import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
+import io.javalin.websocket.*;
 import messages.ErrorMessage;
 import messages.LoadGameMessage;
 import messages.NotificationMessage;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -23,7 +23,6 @@ import java.util.Collection;
 /**
  * Handles WebSocket messages for gameplay
  */
-@WebSocket
 public class WebSocketHandler {
     private final ConnectionManager connectionManager;
     private final AuthDAO authDAO;
@@ -36,13 +35,13 @@ public class WebSocketHandler {
         this.gameDAO = gameDAO;
     }
 
-    @OnWebSocketConnect
-    public void onConnect(Session session) {
-        System.out.println("WebSocket connected: " + session.getRemoteAddress());
+    public void onConnect(WsConnectContext ctx) {
+        System.out.println("WebSocket connected: " + ctx.session.getRemoteAddress());
     }
 
-    @OnWebSocketMessage
-    public void onMessage(Session session, String message) {
+    public void onMessage(WsMessageContext ctx) {
+        Session session = ctx.session;
+        String message = ctx.message();
         try {
             UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
 
@@ -57,15 +56,13 @@ public class WebSocketHandler {
         }
     }
 
-    @OnWebSocketClose
-    public void onClose(Session session, int statusCode, String reason) {
-        connectionManager.removeSession(session);
-        System.out.println("WebSocket closed: " + session.getRemoteAddress());
+    public void onClose(WsCloseContext ctx) {
+        connectionManager.removeSession(ctx.session);
+        System.out.println("WebSocket closed: " + ctx.session.getRemoteAddress());
     }
 
-    @OnWebSocketError
-    public void onError(Session session, Throwable throwable) {
-        System.err.println("WebSocket error: " + throwable.getMessage());
+    public void onError(WsErrorContext ctx) {
+        System.err.println("WebSocket error: " + (ctx.error() != null ? ctx.error().getMessage() : "Unknown error"));
     }
 
     /**
