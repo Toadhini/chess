@@ -30,10 +30,27 @@ public class ConnectionManager {
         }
     }
 
-    //Send message to specific sesssion
+    //Send message to specific session
     public void sendMessage(Session session, String message)throws IOException{
         if (session.isOpen()){
             session.getRemote().sendString(message);
         }
+    }
+
+    //Broadcast message to all sessions
+    public void broadcast(Integer gameID, String message) throws IOException{
+        Set<Session> sessions = gameSessions.get(gameID);
+        if(sessions != null){
+            for (Session session : sessions){
+                if(session.isOpen()){
+                    session.getRemote().sendString(message);
+                }
+            }
+        }
+    }
+
+    //Broadcast exceptions
+    public void broadcastExcept(Integer gameID, Session excludeSession, String message) throws IOException{
+
     }
 }
