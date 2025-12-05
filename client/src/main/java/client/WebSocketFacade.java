@@ -5,7 +5,7 @@ import com.google.gson.Gson;
 import com.sun.nio.sctp.NotificationHandler;
 import commands.UserGameCommand;
 import commands.MakeMoveCommand;
-import jakarta.websocket.ClientEndpoint;
+import jakarta.websocket.*;
 import messages.ServerMessage;
 import messages.LoadGameMessage;
 import messages.ErrorMessage;
@@ -27,5 +27,16 @@ public class WebSocketFacade {
         void onError(String errorMessage);
     }
 
+    public WebSocketFacade(String url, NotificationHandler handler)throws Exception{
+        this.notificationHandler = handler;
+        URI uri = new URI(url);
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        this.session = container.connectToServer(this, uri);
+    }
+
+    @OnOpen
+    public void onOpen(Session session){
+        System.out.println("WebSocket connected");
+    }
 
 }
