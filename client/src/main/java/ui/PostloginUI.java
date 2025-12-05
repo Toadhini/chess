@@ -103,27 +103,18 @@ public class PostloginUI {
             return "Color must be WHITE or BLACK";
         }
 
+        // Join the game via HTTP
         serverFacade.joinGame(authToken, gameID, color);
-
-        // Get the game data to draw the board
-        ListGamesResult result = serverFacade.listGames(authToken);
-        GameData gameData = null;
-        for (GameData game : result.games()) {
-            if (game.gameID() == gameID) {
-                gameData = game;
-                break;
-            }
-        }
-
-        if (gameData != null && gameData.game() != null) {
-            System.out.println(SET_TEXT_COLOR_GREEN + "Joined game as " + color + RESET_TEXT_COLOR);
-            ChessGame.TeamColor perspective = color.equals("WHITE") ?
-                    ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
-            BoardDrawer.drawBoard(gameData.game(), perspective);
-            return "";
-        } else {
-            return SET_TEXT_COLOR_GREEN + "Joined game as " + color + RESET_TEXT_COLOR;
-        }
+        
+        // Enter gameplay UI
+        ChessGame.TeamColor playerColor = color.equals("WHITE") 
+            ? ChessGame.TeamColor.WHITE 
+            : ChessGame.TeamColor.BLACK;
+        
+        GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken, gameID, playerColor);
+        gameplayUI.run();
+        
+        return "";
     }
 
     /**
@@ -135,29 +126,10 @@ public class PostloginUI {
             return "Invalid game number. Use 'list' to see available games.";
         }
 
-        try {
-            serverFacade.joinGame(authToken, gameID, null);
-
-            // Get the game data to draw the board
-            ListGamesResult result = serverFacade.listGames(authToken);
-            GameData gameData = null;
-            for (GameData game : result.games()) {
-                if (game.gameID() == gameID) {
-                    gameData = game;
-                    break;
-                }
-            }
-
-            if (gameData != null && gameData.game() != null) {
-                System.out.println(SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR);
-                // Observers see from white's perspective
-                BoardDrawer.drawBoard(gameData.game(), ChessGame.TeamColor.WHITE);
-                return "";
-            } else {
-                return SET_TEXT_COLOR_GREEN + "Observing game" + RESET_TEXT_COLOR;
-            }
-        } catch (Exception e) {
-            throw e; // Re-throw exceptions
-        }
+        // Observers don't call joinGame, they just connect via WebSocket
+        GameplayUI gameplayUI = new GameplayUI("http://localhost:8080", authToken, gameID, null);
+        gameplayUI.run();
+        
+        return "";
     }
 }

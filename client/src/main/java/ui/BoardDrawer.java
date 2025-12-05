@@ -1,6 +1,7 @@
 package ui;
 
 import chess.*;
+import java.util.Set;
 import static ui.EscapeSequences.*;
 /**
  * Draws a chess board in the terminal with proper colors and piece placement
@@ -9,33 +10,45 @@ public class BoardDrawer {
 
     private static final String LIGHT_SQUARE = SET_BG_COLOR_DARK_GREEN;
     private static final String DARK_SQUARE = SET_BG_COLOR_WHITE;
+    private static final String HIGHLIGHT_LIGHT = SET_BG_COLOR_GREEN;
+    private static final String HIGHLIGHT_DARK = SET_BG_COLOR_DARK_GREEN;
     private static final String BORDER_COLOR = SET_BG_COLOR_LIGHT_GREY;
 
     /**
-     * Draws the chess board from the specified perspective
-     * @param game The chess game to draw
+     * Draws the chess board from the specified perspective with optional highlighting
+     * @param board The chess board to draw
      * @param perspective The color perspective (WHITE shows a1 at bottom-left, BLACK shows a1 at top-right)
+     * @param highlightPositions Set of positions to highlight (or null for no highlighting)
+     */
+    public void drawBoard(ChessBoard board, ChessGame.TeamColor perspective, Set<ChessPosition> highlightPositions) {
+        if (perspective == ChessGame.TeamColor.BLACK) {
+            drawBoardBlackPerspective(board, highlightPositions);
+        } else {
+            drawBoardWhitePerspective(board, highlightPositions);
+        }
+    }
+
+    /**
+     * Draws the chess board from the specified perspective (legacy method for compatibility)
+     * @param game The chess game to draw
+     * @param perspective The color perspective
      */
     public static void drawBoard(ChessGame game, ChessGame.TeamColor perspective) {
         ChessBoard board = game.getBoard();
-
-        if (perspective == ChessGame.TeamColor.BLACK) {
-            drawBoardBlackPerspective(board);
-        } else {
-            drawBoardWhitePerspective(board);
-        }
+        BoardDrawer drawer = new BoardDrawer();
+        drawer.drawBoard(board, perspective, null);
     }
 
     /**
      * Draws board from white's perspective (a1 at bottom-left)
      */
-    private static void drawBoardWhitePerspective(ChessBoard board) {
+    private void drawBoardWhitePerspective(ChessBoard board, Set<ChessPosition> highlightPositions) {
         // Top border with column labels
         drawColumnLabels(false);
 
         // Draw rows 8 down to 1 (top to bottom)
         for (int row = 8; row >= 1; row--) {
-            drawRow(board, row, false);
+            drawRow(board, row, false, highlightPositions);
         }
 
         // Bottom border with column labels
@@ -47,13 +60,13 @@ public class BoardDrawer {
     /**
      * Draws board from black's perspective (a1 at top-right)
      */
-    private static void drawBoardBlackPerspective(ChessBoard board) {
+    private void drawBoardBlackPerspective(ChessBoard board, Set<ChessPosition> highlightPositions) {
         // Top border with column labels (reversed)
         drawColumnLabels(true);
 
         // Draw rows 1 up to 8 (top to bottom from black's view)
         for (int row = 1; row <= 8; row++) {
-            drawRow(board, row, true);
+            drawRow(board, row, true, highlightPositions);
         }
 
         // Bottom border with column labels (reversed)
@@ -65,7 +78,7 @@ public class BoardDrawer {
     /**
      * Draws the column labels (a-h or h-a)
      */
-    private static void drawColumnLabels(boolean reversed) {
+    private void drawColumnLabels(boolean reversed) {
         System.out.print(BORDER_COLOR + SET_TEXT_COLOR_BLACK);
         System.out.print("   "); // Space for row number
 
@@ -87,7 +100,7 @@ public class BoardDrawer {
     /**
      * Draws a single row of the chess board
      */
-    private static void drawRow(ChessBoard board, int row, boolean reversed) {
+    private void drawRow(ChessBoard board, int row, boolean reversed, Set<ChessPosition> highlightPositions) {
         // Left row number
         System.out.print(BORDER_COLOR + SET_TEXT_COLOR_BLACK);
         System.out.print(" " + row + " ");
@@ -96,11 +109,11 @@ public class BoardDrawer {
         // Draw squares
         if (reversed) {
             for (int col = 8; col >= 1; col--) {
-                drawSquare(board, row, col);
+                drawSquare(board, row, col, highlightPositions);
             }
         } else {
             for (int col = 1; col <= 8; col++) {
-                drawSquare(board, row, col);
+                drawSquare(board, row, col, highlightPositions);
             }
         }
 
@@ -114,13 +127,22 @@ public class BoardDrawer {
     /**
      * Draws a single square with its piece (if any)
      */
-    private static void drawSquare(ChessBoard board, int row, int col) {
+    private void drawSquare(ChessBoard board, int row, int col, Set<ChessPosition> highlightPositions) {
         ChessPosition position = new ChessPosition(row, col);
         ChessPiece piece = board.getPiece(position);
 
-        // Determine square color (h1 and a8 must be light)
+        // Check if this position should be highlighted
+        boolean isHighlighted = highlightPositions != null && highlightPositions.contains(position);
+
+        // Determine square color
         boolean isLightSquare = (row + col) % 2 == 0;
-        String squareColor = isLightSquare ? LIGHT_SQUARE : DARK_SQUARE;
+        String squareColor;
+        
+        if (isHighlighted) {
+            squareColor = isLightSquare ? HIGHLIGHT_LIGHT : HIGHLIGHT_DARK;
+        } else {
+            squareColor = isLightSquare ? LIGHT_SQUARE : DARK_SQUARE;
+        }
 
         System.out.print(squareColor);
 
