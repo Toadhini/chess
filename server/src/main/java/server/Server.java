@@ -20,6 +20,10 @@ public class Server {
     private final GameService gameService;
     private final SessionService sessionService;
 
+    //Websocket parts
+    private final ConnectionManager connectionManager;
+    private final WebSocketHandler webSocketHandler;
+
     //Handlers
     private final ClearHandler clearHandler;
     private final UserHandler userHandler;
@@ -42,7 +46,9 @@ public class Server {
         userService = new UserService(userDAO, authDAO);
         gameService = new GameService(authDAO, gameDAO);
         sessionService = new SessionService(authDAO, userDAO, gameDAO);
-
+        //Websocket initialization
+        connectionManager = new ConnectionManager();
+        webSocketHandler = new WebSocketHandler(connectionManager, authDAO, gameDAO);
         //Handler initialization
         clearHandler = new ClearHandler(clearService);
         userHandler = new UserHandler(userService);
@@ -56,6 +62,13 @@ public class Server {
         javalin.put("/game", gameHandler::joinGame);
         javalin.post("/session", sessionHandler::login);
         javalin.delete("/session", sessionHandler::logout);
+
+        javalin.ws("/ws", ws -> {
+            ws.onConnect(webSocketHandler::onConnect);
+            ws.onMessage(webSocketHandler::onMessage);
+            ws.onClose(webSocketHandler::onClose);
+            ws.onError(webSocketHandler::onError);
+        });
     }
 
 
