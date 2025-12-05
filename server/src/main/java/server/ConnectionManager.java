@@ -51,6 +51,13 @@ public class ConnectionManager {
 
     //Broadcast exceptions
     public void broadcastExcept(Integer gameID, Session excludeSession, String message) throws IOException{
-
+        Set<Session> sessions = gameSessions.get(gameID);
+        if (sessions != null) {
+            for (Session session : sessions) {
+                if (session.isOpen() && !session.equals(excludeSession)) {
+                    session.getRemote().sendString(message);
+                }
+            }
+        }
     }
 }
