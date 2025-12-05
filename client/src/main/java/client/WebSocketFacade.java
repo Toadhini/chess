@@ -63,4 +63,47 @@ public class WebSocketFacade {
         }
     }
 
+    @OnClose
+    public void onClose(Session session) {
+        System.out.println("WebSocket closed");
+    }
+
+    @OnError
+    public void onError(Session session, Throwable throwable) {
+        System.err.println("WebSocket error: " + throwable.getMessage());
+    }
+
+    public void sendConnect(String authToken, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
+        sendMessage(gson.toJson(command));
+    }
+
+    public void sendMakeMove(String authToken, int gameID, ChessMove move) throws Exception {
+        MakeMoveCommand command = new MakeMoveCommand(authToken, gameID, move);
+        sendMessage(gson.toJson(command));
+    }
+
+    public void sendLeave(String authToken, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+        sendMessage(gson.toJson(command));
+    }
+
+    public void sendResign(String authToken, int gameID) throws Exception {
+        UserGameCommand command = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);
+        sendMessage(gson.toJson(command));
+    }
+
+    private void sendMessage(String message) throws Exception {
+        if (session.isOpen()) {
+            session.getBasicRemote().sendText(message);
+        } else {
+            throw new Exception("WebSocket session is not open");
+        }
+    }
+
+    public void close() throws Exception {
+        if (session != null && session.isOpen()) {
+            session.close();
+        }
+    }
 }
