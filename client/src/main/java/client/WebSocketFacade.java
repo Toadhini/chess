@@ -2,10 +2,8 @@ package client;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import com.sun.nio.sctp.NotificationHandler;
 import commands.UserGameCommand;
 import commands.MakeMoveCommand;
-import jakarta.websocket.*;
 import messages.ServerMessage;
 import messages.LoadGameMessage;
 import messages.ErrorMessage;
@@ -23,7 +21,7 @@ public class WebSocketFacade {
 
     public interface NotificationHandler{
         void onLoadGame(ChessGame game);
-        void onNotifications(String message);
+        void onNotification(String message);
         void onError(String errorMessage);
     }
 
