@@ -39,4 +39,28 @@ public class WebSocketFacade {
         System.out.println("WebSocket connected");
     }
 
+    @OnMessage
+    public void onMessage(String message) {
+        try {
+            ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
+
+            switch (serverMessage.getServerMessageType()) {
+                case LOAD_GAME -> {
+                    LoadGameMessage loadGame = gson.fromJson(message, LoadGameMessage.class);
+                    notificationHandler.onLoadGame(loadGame.getGame());
+                }
+                case NOTIFICATION -> {
+                    NotificationMessage notification = gson.fromJson(message, NotificationMessage.class);
+                    notificationHandler.onNotification(notification.getMessage());
+                }
+                case ERROR -> {
+                    ErrorMessage error = gson.fromJson(message, ErrorMessage.class);
+                    notificationHandler.onError(error.getErrorMessage());
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing message: " + e.getMessage());
+        }
+    }
+
 }
