@@ -9,7 +9,7 @@ public class MakeMoveCommand extends UserGameCommand {
         super(CommandType.MAKE_MOVE, authToken, gameID);
         this.move = move;
     }
-    
+    //commit
     public ChessMove getMove() {
         return move;
     }
