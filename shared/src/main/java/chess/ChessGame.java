@@ -170,25 +170,28 @@ public class ChessGame {
             }
         }
 
-        //Check for opponent moves against king pos
-        TeamColor opponentColor;
-        if (teamColor == TeamColor.BLACK) {
-            opponentColor = TeamColor.WHITE;
-        } else {
-            opponentColor = TeamColor.BLACK;
-        }
+        //Check if opponent can attack the king position
+        TeamColor opponentColor = (teamColor == TeamColor.BLACK) ? TeamColor.WHITE : TeamColor.BLACK;
+        return canOpponentAttackPosition(opponentColor, kingPosition);
+    }
+
+    /**
+     * Helper method to check if opponent can attack a position
+     */
+    private boolean canOpponentAttackPosition(TeamColor opponentColor, ChessPosition targetPosition) {
         for (int row = 1; row <= 8; row++) {
             for (int col = 1; col <= 8; col++) {
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
 
-                if (piece != null && piece.getTeamColor() == opponentColor) {
-                    Collection<ChessMove> opponenetMoves = piece.pieceMoves(board, pos);
+                if (piece == null || piece.getTeamColor() != opponentColor) {
+                    continue;
+                }
 
-                    for (ChessMove move : opponenetMoves) {
-                        if (move.getEndPosition().equals(kingPosition)) {
-                            return true;
-                        }
+                Collection<ChessMove> moves = piece.pieceMoves(board, pos);
+                for (ChessMove move : moves) {
+                    if (move.getEndPosition().equals(targetPosition)) {
+                        return true;
                     }
                 }
             }

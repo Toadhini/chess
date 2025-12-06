@@ -132,77 +132,44 @@ public class ChessPiece {
         addSlidingMoves(board, myPosition, moves, rookDirections);
         return moves;
     }
-    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>();
-        int[][] knightDirections = {
-                {2, 1},
-                {1, 2},
-                {-1, 2},
-                {-2, 1},
-                {1, -2},
-                {2, -1},
-                {-1, -2},
-                {-2, -1}
-        };
+    /**
+     * Helper method for non-sliding pieces (knight, king)
+     * Adds single-step moves in given directions
+     */
+    private void addSingleStepMoves(ChessBoard board, ChessPosition myPosition,
+                                     Collection<ChessMove> moves, int[][] directions) {
+        for (int[] direction : directions) {
+            int targetRow = myPosition.getRow() + direction[0];
+            int targetCol = myPosition.getColumn() + direction[1];
 
-        for(int[] direction : knightDirections){
-            int rowDirection = direction[0];
-            int colDirection = direction[1];
-
-            int targetRow = myPosition.getRow() + rowDirection;
-            int targetCol = myPosition.getColumn() + colDirection;
-
-            //Not sliding piece so just a jump
-            if (isValidPosition(targetRow, targetCol)){
+            if (isValidPosition(targetRow, targetCol)) {
                 ChessPosition targetPosition = new ChessPosition(targetRow, targetCol);
                 ChessPiece targetPiece = board.getPiece(targetPosition);
 
-                if (targetPiece == null){
-                    //Empty square
-                    moves.add(new ChessMove(myPosition, targetPosition, null));
-                }
-                else if (targetPiece.getTeamColor() != this.getTeamColor()){
-                    //Enemy piece
+                if (targetPiece == null || targetPiece.getTeamColor() != this.getTeamColor()) {
                     moves.add(new ChessMove(myPosition, targetPosition, null));
                 }
             }
         }
+    }
+
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>();
+        int[][] knightDirections = {
+                {2, 1}, {1, 2}, {-1, 2}, {-2, 1},
+                {1, -2}, {2, -1}, {-1, -2}, {-2, -1}
+        };
+        addSingleStepMoves(board, myPosition, moves, knightDirections);
         return moves;
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>();
-
         int[][] kingDirections = {
-                {1, 1},
-                {-1, -1},
-                {1, -1},
-                {-1, 1},
-                {1, 0},
-                {-1, 0},
-                {0, 1},
-                {0, -1}
+                {1, 1}, {-1, -1}, {1, -1}, {-1, 1},
+                {1, 0}, {-1, 0}, {0, 1}, {0, -1}
         };
-
-        for(int[] direction : kingDirections){
-            int rowDirection = direction[0];
-            int colDirection = direction[1];
-
-            int targetRow = myPosition.getRow() + rowDirection;
-            int targetCol = myPosition.getColumn() + colDirection;
-
-            if (isValidPosition(targetRow, targetCol)){
-                ChessPosition targetPosition = new ChessPosition(targetRow, targetCol);
-                ChessPiece targetPiece = board.getPiece(targetPosition);
-
-                if (targetPiece == null){
-                    moves.add(new ChessMove(myPosition, targetPosition, null));
-                }
-                else if (targetPiece.getTeamColor() != this.getTeamColor()){
-                    moves.add(new ChessMove(myPosition, targetPosition, null));
-                }
-            }
-        }
+        addSingleStepMoves(board, myPosition, moves, kingDirections);
         return moves;
     }
 
