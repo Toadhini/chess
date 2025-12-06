@@ -42,13 +42,8 @@ public class GameService {
             throw new DataAccessException("Error: bad request");
         }
 
-        // If playerColor is null, treat as observer (no action needed)
-        if (playerColor == null) {
-            return; // Observers don't modify the game
-        }
-
-        // Validate playerColor - must be "WHITE" or "BLACK"
-        if (playerColor.isEmpty() || 
+        // Validate playerColor - must be "WHITE" or "BLACK" (not null, not empty, not invalid)
+        if (playerColor == null || playerColor.isEmpty() || 
             (!playerColor.equals("WHITE") && !playerColor.equals("BLACK"))) {
             throw new DataAccessException("Error: bad request");
         }
