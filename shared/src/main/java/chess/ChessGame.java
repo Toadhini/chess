@@ -165,7 +165,9 @@ public class ChessGame {
                     break;
                 }
             }
-            if (kingPosition != null) break;
+            if (kingPosition != null) {
+                break;
+            }
         }
 
         //Check for opponent moves against king pos
@@ -195,37 +197,37 @@ public class ChessGame {
     }
 
     /**
+     * Helper method to check if a team has any valid moves
+     *
+     * @param teamColor which team to check
+     * @return True if the team has at least one valid move
+     */
+    private boolean hasValidMoves(TeamColor teamColor) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition position = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(position);
+
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = validMoves(position);
+                    if (!moves.isEmpty()) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
      * Determines if the given team is in checkmate
      *
      * @param teamColor which team to check for checkmate
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        //Stalemate so cant be checkmate
-        if (!isInCheck(teamColor)) {
-            return false;
-        }
-
-        //Check if the team has any valid moves to escape check
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(position);
-
-                //If there's a piece and it belongs to the team
-                if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = validMoves(position);
-
-                    //Able to escape checkmate
-                    if (!moves.isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        // In check AND no valid moves = checkmate
-        return true;
+        // Must be in check AND have no valid moves
+        return isInCheck(teamColor) && !hasValidMoves(teamColor);
     }
 
     /**
@@ -236,27 +238,8 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        if (isInCheck(teamColor)){
-            return false;
-        }
-
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
-                ChessPosition position = new ChessPosition(row, col);
-                ChessPiece piece = board.getPiece(position);
-
-                // If there's a piece and it belongs to the team
-                if (piece != null && piece.getTeamColor() == teamColor) {
-                    Collection<ChessMove> moves = validMoves(position);
-
-                    // If this piece has any valid moves, not stalemate
-                    if (!moves.isEmpty()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
+        // Must NOT be in check AND have no valid moves
+        return !isInCheck(teamColor) && !hasValidMoves(teamColor);
     }
 
     /**

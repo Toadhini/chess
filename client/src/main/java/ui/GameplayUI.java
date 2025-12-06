@@ -118,32 +118,8 @@ public class GameplayUI implements WebSocketFacade.NotificationHandler {
             }
             
             // Check if this is a pawn promotion move
-            ChessMove move;
-            ChessPiece piece = currentGame.getBoard().getPiece(start);
+            ChessMove move = createMove(start, end);
             
-            if (piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN) {
-                if ((piece.getTeamColor() == ChessGame.TeamColor.WHITE && end.getRow() == 8) ||
-                    (piece.getTeamColor() == ChessGame.TeamColor.BLACK && end.getRow() == 1)) {
-                    // Pawn promotion
-                    System.out.print("Promote to (Q/R/B/N): ");
-                    String promotionInput = scanner.nextLine().trim().toLowerCase();
-                    ChessPiece.PieceType promotionPiece = switch (promotionInput) {
-                        case "q" -> ChessPiece.PieceType.QUEEN;
-                        case "r" -> ChessPiece.PieceType.ROOK;
-                        case "b" -> ChessPiece.PieceType.BISHOP;
-                        case "n" -> ChessPiece.PieceType.KNIGHT;
-                        default -> {
-                            System.out.println("Invalid promotion piece. Defaulting to Queen.");
-                            yield ChessPiece.PieceType.QUEEN;
-                        }
-                    };
-                    move = new ChessMove(start, end, promotionPiece);
-                } else {
-                    move = new ChessMove(start, end, null);
-                }
-            } else {
-                move = new ChessMove(start, end, null);
-            }
             
             webSocketFacade.sendMakeMove(authToken, gameID, move);
         } catch (Exception e) {
@@ -202,6 +178,38 @@ public class GameplayUI implements WebSocketFacade.NotificationHandler {
         } catch (Exception e) {
             System.out.println(SET_TEXT_COLOR_RED + "Error highlighting moves: " + e.getMessage() + RESET_TEXT_COLOR);
         }
+    }
+
+    private ChessMove createMove(ChessPosition start, ChessPosition end) {
+        ChessPiece piece = currentGame.getBoard().getPiece(start);
+        
+        // Check if this is a pawn promotion
+        if (piece != null && piece.getPieceType() == ChessPiece.PieceType.PAWN) {
+            boolean isPromotion = (piece.getTeamColor() == ChessGame.TeamColor.WHITE && end.getRow() == 8)
+                    || (piece.getTeamColor() == ChessGame.TeamColor.BLACK && end.getRow() == 1);
+            
+            if (isPromotion) {
+                return createPromotionMove(start, end);
+            }
+        }
+        
+        return new ChessMove(start, end, null);
+    }
+    
+    private ChessMove createPromotionMove(ChessPosition start, ChessPosition end) {
+        System.out.print("Promote to (Q/R/B/N): ");
+        String promotionInput = scanner.nextLine().trim().toLowerCase();
+        ChessPiece.PieceType promotionPiece = switch (promotionInput) {
+            case "q" -> ChessPiece.PieceType.QUEEN;
+            case "r" -> ChessPiece.PieceType.ROOK;
+            case "b" -> ChessPiece.PieceType.BISHOP;
+            case "n" -> ChessPiece.PieceType.KNIGHT;
+            default -> ChessPiece.PieceType.QUEEN;
+        };
+        if (!promotionInput.matches("[qrbn]")) {
+            System.out.println("Invalid promotion piece. Defaulting to Queen.");
+        }
+        return new ChessMove(start, end, promotionPiece);
     }
 
     private ChessPosition parsePosition(String pos) {
