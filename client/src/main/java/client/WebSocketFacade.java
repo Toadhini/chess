@@ -11,6 +11,7 @@ import websocket.messages.NotificationMessage;
 import chess.ChessMove;
 
 import javax.websocket.*;
+import org.glassfish.tyrus.client.ClientManager;
 import java.net.URI;
 
 @ClientEndpoint
@@ -28,7 +29,7 @@ public class WebSocketFacade {
     public WebSocketFacade(String url, NotificationHandler handler)throws Exception{
         this.notificationHandler = handler;
         URI uri = new URI(url);
-        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        WebSocketContainer container = ClientManager.createClient();
         this.session = container.connectToServer(this, uri);
     }
 
