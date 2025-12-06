@@ -10,7 +10,7 @@ import websocket.messages.ErrorMessage;
 import websocket.messages.NotificationMessage;
 import chess.ChessMove;
 
-import javax.websocket.*;
+import jakarta.websocket.*;
 import org.glassfish.tyrus.client.ClientManager;
 import java.net.URI;
 
